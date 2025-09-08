@@ -1,0 +1,48 @@
+{% extends 'website/base.html' %} {% load static %}
+
+{% block title %}Services || Thathwamasi - IT Solution & Technology{% endblock %}
+
+
+{% block content %}
+
+<div class="thath-breadcrumb" style="background-image: url({% static 'website/images/breadcrumb/breadcrumb.png' %})">
+    <div class="container">
+      <h1 class="post__title">Services</h1>
+      <nav class="breadcrumbs">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li aria-current="page"> Service</li>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+
+    <div class="section thath-section-padding">
+    <div class="container">
+      <div class="thath-section-title center">
+        <h2>Our awesome services to give you success</h2>
+      </div>
+      <div class="row">
+        <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-duration="600">
+          <div class="thath-portfolio-wrap">
+            <div class="thath-portfolio-thumb">
+              <img src="{% static 'website/images/p1/p1.png' %}" alt="">
+              <a class='thath-portfolio-btn' href='#'>
+                <span class="p-btn-wraper"><i class="ri-arrow-right-up-line"></i></span>
+              </a>
+              <div class="thath-portfolio-data">
+                <a href='#'>
+                  <h4>Web & Mobile App Development</h4>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+{% endblock %}

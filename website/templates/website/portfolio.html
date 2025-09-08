@@ -1,0 +1,64 @@
+{% extends 'website/base.html' %} {% load static %}
+
+{% block title %}Portfolio || Thathwamasi - IT Solution & Technology{% endblock %}
+
+
+{% block content %}
+
+<div class="thath-breadcrumb" style="background-image: url({% static 'website/images/breadcrumb/breadcrumb.png' %})">
+    <div class="container">
+        <h1 class="post__title">Portfolio</h1>
+        <nav class="breadcrumbs">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li aria-current="page"> Portfolio</li>
+            </ul>
+        </nav>
+
+    </div>
+</div>
+
+<div class="section thath-section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-duration="500">
+                <div class="thath-portfolio-wrap">
+                    <div class="thath-portfolio-thumb">
+                        <img src="{% static 'website/images/projects/annaiteresa.jpg' %}" alt="">
+                        <a class='thath-portfolio-btn' href="https://annaiteresa.org/" target="_blank">
+                            <span class="p-btn-wraper"><i class="ri-arrow-right-up-line"></i></span>
+                        </a>
+                        <div class="thath-portfolio-data">
+                            <a href="https://annaiteresa.org/" target="_blank">
+                                <h4>Annai Teresa Foundation</h4>
+                            </a>
+                            <p>Charity, Social Service, Community</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-duration="700">
+                <div class="thath-portfolio-wrap">
+                    <div class="thath-portfolio-thumb">
+                        <img src="{% static 'website/images/projects/indian_public.jpg' %}" alt="">
+                        <a class='thath-portfolio-btn' href="https://ipfngo.org/" target="_blank">
+                            <span class="p-btn-wraper"><i class="ri-arrow-right-up-line"></i></span>
+                        </a>
+                        <div class="thath-portfolio-data">
+                            <a href="https://ipfngo.org/" target="_blank">
+                                <h4>Indian Public Foundation</h4>
+                            </a>
+                            <p>Charity, Social Service, Community</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

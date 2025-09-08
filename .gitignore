@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+*.pyo
+*.pyd
+*.pdb
+*.log
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+env.bak/
+
+# Django stuff
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+static_root/
+local_settings.py
+
+# VS Code / IDE
+.vscode/
+.idea/
+*.swp
+
+# Byte-compiled / optimized / DLL files
+*.dll
+*.class
+*.o
+*.a
+*.out
+*.pyc
+
+# Migrations (optional: ignore if you don’t want to commit them early)
+# */migrations/*
+# !*/migrations/__init__.py
+
+# OS files
+.DS_Store
+Thumbs.db

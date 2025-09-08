@@ -1,0 +1,85 @@
+{% extends 'website/base.html' %} {% load static %}
+
+{% block title %}Contact || Thathwamasi - IT Solution & Technology{% endblock %}
+
+
+{% block content %}
+
+<div class="thath-breadcrumb" style="background-image: url({% static 'website/images/breadcrumb/breadcrumb.png' %})">
+    <div class="container">
+      <h1 class="post__title">Contact</h1>
+      <nav class="breadcrumbs">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li aria-current="page">Contact</li>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+
+
+    <div class="section thath-section-padding">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 d-flex align-items-center">
+          <div class="thath-default-content mr40">
+            <h2>Let’s build an awesome project together</h2>
+            <p>Each demo built with Teba will look different. You can customize almost anything in the appearance of your website with only a few clicks. Each demo built with Teba will look different.</p>
+            <div class="thath-contact-info-column">
+              <div class="thath-contact-info">
+                <i class="ri-map-pin-2-fill"></i>
+                <h5>Address</h5>
+                <p>1791 Yorkshire Circle Kitty<br>
+                Hawk, NC 279499</p>
+              </div>
+              <div class="thath-contact-info">
+                <i class="ri-mail-fill"></i>
+                <h5>Contact</h5>
+                <a href="mailto:name@email.com">info@mthemeus.com</a>
+                <a href="tel:123">518-564-3200</a>
+              </div>
+            </div>
+            Office Hours: Mon – Sat: 8:00 AM – 10:00 PM
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="thath-main-form bg-light1 ml60" data-aos="fade-up" data-aos-duration="800">
+            <h3>Fill The Contact Form</h3>
+            <p>Feel free to contact with us, we don’t spam your email</p>
+            <form action="#">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="thath-main-field">
+                    <input type="text" placeholder="Your name">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="thath-main-field">
+                    <input type="number" placeholder="Phone number">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="thath-main-field">
+                    <input type="email" placeholder="Email address">
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="thath-main-field">
+                    <textarea name="textarea" placeholder="Write your message"></textarea>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <button id="thath-main-form-btn" type="button" data-text="Send Message"> <span class="btn-wraper">Send Message</span> </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+{% endblock %}

@@ -1,0 +1,7 @@
+.active {
+    color: var(--accent-bg) !important;
+}
+
+.nav-link-item:hover {
+    color: var(--accent-bg) !important;
+}

@@ -1,0 +1,64 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        Thathwamasi - IT Solution & Technology
+      {% endblock %}
+    </title>
+
+    <link rel="shortcut icon" href="{% static 'website/images/favicon.ico' %}" type="image/x-icon" />
+    <link rel="icon" href="{% static 'website/images/favicon.ico' %}" type="image/x-icon" />
+    <!-- - End favicon -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&amp;display=swap" rel="stylesheet" />
+    <!-- End google font -->
+
+     <link rel="stylesheet" href="{% static 'website/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/magnific-popup.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/slick.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/fontawesome.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/remixicon.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/aos.css' %}">
+
+
+  <!-- Code Editor  -->
+
+  <link rel="stylesheet" href="{% static 'website/css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/app.min.css' %}">
+  <link rel="stylesheet" href="{% static 'website/css/custom.css' %}">
+  </head>
+
+  <body>
+    {% include 'website/includes/header.html' %}
+    {% block content %}
+    {% endblock %}
+    {% include 'website/includes/footer.html' %}
+
+    <!-- scripts -->
+  <script src="{% static 'website/js/jquery-3.7.1.min.js' %}"></script>
+  <script src="{% static 'website/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'website/js/menu/menu.js' %}"></script>
+  <script src="{% static 'website/js/jquery.magnific-popup.min.js' %}"></script>
+  <script src="{% static 'website/js/slick.js' %}"></script>
+  <script src="{% static 'website/js/countdown.js' %}"></script>
+  <script src="{% static 'website/js/skillbar.js' %}"></script>
+  <script src="{% static 'website/js/slick-animation.js' %}"></script>
+  <script src="{% static 'website/js/slick-animation.min.js' %}"></script>
+  <script src="{% static 'website/js/faq.js' %}"></script>
+  <script src="{% static 'website/js/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'website/js/tabs-slider.js' %}"></script>
+  <script src="{% static 'website/js/product-increment.js' %}"></script>
+  <script src="{% static 'website/js/top-to-bottom.js' %}"></script>
+  <script src="{% static 'website/js/aos.js' %}"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?v=3&amp;key=AIzaSyArZVfNvjnLNwJZlLJKuOiWHZ6vtQzzb1Y"></script>
+
+  <script src="{% static 'website/js/app.js' %}"></script>
+  </body>
+
+  </html>

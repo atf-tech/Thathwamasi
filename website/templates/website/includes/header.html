@@ -1,0 +1,122 @@
+{% load static %}
+
+<div class="thath-preloader-wrap">
+  <div class="thath-preloader">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
+<!-- End preloader -->
+
+<!-- progress circle -->
+<div class="paginacontainer">
+  <div class="progress-wrap">
+    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+      <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+    </svg>
+    <div class="top-arrow">
+      <i class="ri-arrow-up-s-line"></i>
+    </div>
+  </div>
+</div>
+
+
+<header class="site-header thath-header-section thath-header-one" id="sticky-menu">
+  <div class="thath-header-top">
+    <div class="container">
+      <div class="thath-header-info-wrap">
+        <div class="thath-header-info">
+          <ul>
+            <li><i class="ri-map-pin-2-fill"></i>74, Y Block 6th St, Y Block, Anna Nagar, Chennai, Tamil Nadu 600040.
+            </li>
+          </ul>
+        </div>
+        <div class="thath-header-info">
+          <ul>
+            <li><a href="tel:123"><i class="ri-phone-fill"></i>+91 987 654 3210</a></li>
+            <li><a href="mailto:name@email.com"><i class="ri-mail-fill"></i>info@thathwamasiinfotech.in</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thath-header-bottom">
+    <div class="container">
+      <div class="thath-header-bottom2">
+        <nav class="navbar site-navbar">
+          <!-- Brand Logo-->
+          <div class="brand-logo">
+            <a href="/">
+              <img src="{% static 'website/images/logo/logo.png' %}" alt="" class="light-version-logo">
+            </a>
+          </div>
+          <div class="menu-block-wrapper justify-content-end">
+            <div class="menu-overlay"></div>
+            <nav class="menu-block" id="append-menu-header">
+              <div class="mobile-menu-head">
+                <div class="go-back">
+                  <i class="fa fa-angle-left"></i>
+                </div>
+                <div class="current-menu-title"></div>
+                <div class="mobile-menu-close">&times;</div>
+              </div>
+              <ul class="site-menu-main">
+                <li class="nav-item">
+                  <a class="nav-link-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href='{% url "about" %}'>About</a>
+                </li>
+                <li class="nav-item nav-item-has-children">
+                  <a href="{% url "service" %}" class="nav-link-item {% if request.resolver_match.url_name == 'service' %}active{% endif %} drop-trigger">Services <i class="ri-arrow-down-s-fill"></i></a>
+                  <ul class="sub-menu" id="submenu-1">
+                    <li class="sub-menu--item">
+                      <a href="/">
+                        <span class="menu-item-text">Web & Mobile App Development</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item nav-item-has-children">
+                  <a href="{% url "portfolio" %}" class="nav-link-item {% if request.resolver_match.url_name == 'portfolio' %}active{% endif %} drop-trigger">Portfolio <i class="ri-arrow-down-s-fill"></i></a>
+                  <ul class="sub-menu" id="submenu-1">
+                    <li class="sub-menu--item">
+                      <a href="https://annaiteresa.org/" target="_blank">
+                        <span class="menu-item-text">Annai Teresa Foundation</span>
+                      </a>
+                    </li>
+                    <li class="sub-menu--item">
+                      <a href="https://ipfngo.org/" target="_blank">
+                        <span class="menu-item-text">Indian Public Foundation</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!-- <li class="nav-item">
+                  <a class="nav-link-item" href="/">Careers</a>
+                </li> -->
+                <li class="nav-item">
+                  <a class="nav-link-item {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url "contact" %}">Contact</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="header-btn header-btn-l1 ms-auto d-none d-xs-inline-flex">
+            <div class="thath-header-icon">
+              <a class='thath-default-btn thath-header-btn' data-text='Get in Touch' href="{% url "contact" %}"><span
+                  class="btn-wraper">Get in Touch</span></a>
+            </div>
+          </div>
+          <!-- mobile menu trigger -->
+          <div class="mobile-menu-trigger">
+            <span></span>
+          </div>
+          <!--/.Mobile Menu Hamburger Ends-->
+        </nav>
+      </div>
+
+    </div>
+  </div>
+</header>
