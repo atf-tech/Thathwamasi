@@ -76,8 +76,15 @@ WSGI_APPLICATION = 'Thathwamasi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'thathwamasi',             
+        'USER': 'admin_user',             
+        'PASSWORD': 'Annaiteresa3638#',   
+        'HOST': 'localhost',              
+        'PORT': '3306',                    
+        'OPTIONS': {
+            'charset': 'utf8mb4',          
+        },
     }
 }
 
@@ -106,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'  
 
 USE_I18N = True
 

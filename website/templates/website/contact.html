@@ -47,39 +47,69 @@
           <div class="thath-main-form bg-light1 ml60" data-aos="fade-up" data-aos-duration="800">
             <h3>Fill The Contact Form</h3>
             <p>Feel free to contact with us, we don’t spam your email</p>
-            <form action="#">
+           <form id="contactForm" method="post" action="{% url 'contact_message_contact' %}">
+            {% csrf_token %}
               <div class="row">
                 <div class="col-lg-6">
                   <div class="thath-main-field">
-                    <input type="text" placeholder="Your name">
+                <input type="text" name="name" placeholder="Your name" required>
                   </div>
                 </div>
                 <div class="col-lg-6">
                   <div class="thath-main-field">
-                    <input type="number" placeholder="Phone number">
+              <input type="text" name="phone" placeholder="Phone number" required>
                   </div>
                 </div>
                 <div class="col-lg-12">
                   <div class="thath-main-field">
-                    <input type="email" placeholder="Email address">
+               <input type="email" name="email" placeholder="Email address" required>
                   </div>
                 </div>
                 <div class="col-lg-12">
                   <div class="thath-main-field">
-                    <textarea name="textarea" placeholder="Write your message"></textarea>
+                  <textarea name="message" placeholder="Write your message"></textarea>
                   </div>
                 </div>
                 <div class="col-lg-12">
-                  <button id="thath-main-form-btn" type="button" data-text="Send Message"> <span class="btn-wraper">Send Message</span> </button>
-                </div>
+                <button type="submit" id="thath-main-form-btn" data-text="Send Message">
+                  <span class="btn-wraper">Send Message</span>
+                </button>
+              </div>
               </div>
             </form>
+
+            <div id="formResponse" style="margin-top: 10px;"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $("#contactForm").on("submit", function (e) {
+    e.preventDefault();
+
+    $.ajax({
+      url: $("#contactForm").attr("action"),
+      type: "POST",
+      data: $(this).serialize(),
+      headers: { "X-CSRFToken": "{{ csrf_token }}" },
+      success: function (response) {
+        if (response.status === "success") {
+          $("#formResponse").html("<p style='color:green;'>" + response.message + "</p>");
+          $("#contactForm")[0].reset();
+        } else {
+          $("#formResponse").html("<p style='color:red;'>" + response.message + "</p>");
+        }
+      },
+      error: function (xhr) {
+        console.log(xhr.responseText);
+        $("#formResponse").html("<p style='color:red;'>Server error. Try again.</p>");
+      },
+    });
+  });
+</script>
+
 
 {% endblock %}
