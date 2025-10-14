@@ -55,13 +55,27 @@ def logout_view(request):
     return redirect('login')
 
 
+#Dashboard Home
 
 @login_required(login_url='/dashboard/login')
 def home(request):
     attendance_records = Attendance.objects.select_related('employee').all()
+    total_employees = Employee.objects.filter(employee_status=True).count()
+    today = timezone.localdate()
+    present_today = Attendance.objects.filter(date=today).count()
+    absent_today = total_employees - present_today
+    all_present = absent_today == 0
+
     return render(request, 'dashboard/index.html', {
-        'attendance_records': attendance_records
+        'attendance_records': attendance_records,
+        'total_employees': total_employees,
+        'present_today': present_today,
+        'absent_today': absent_today,
+        'attendance_overview': f"{present_today}/{total_employees}",
+        'all_present': all_present,
     })
+
+
 
 
 
@@ -119,6 +133,8 @@ def employee(request):
 
 
 
+
+@csrf_exempt
 def attendance(request):
     ctx = {"show_step2": False}
 
@@ -139,10 +155,10 @@ def attendance(request):
         # Get today's attendance if exists
         attendance = Attendance.objects.filter(employee=employee, date=today).first()
         ctx["attendance"] = attendance
-        ctx["current_time"] = timezone.localtime().strftime("%H:%M:%S")
+        ctx["current_time"] = timezone.localtime().strftime("%I:%M:%S %p")
         ctx["show_step2"] = True
 
-        # ---- Calculate preliminary remarks even before check-in ----
+        # ---- Calculate preliminary remarks before check-in ----
         if employee.shift_timings:
             try:
                 shift_start = datetime.strptime(employee.shift_timings.split("to")[0].strip(), "%H:%M").time()
@@ -152,7 +168,6 @@ def attendance(request):
             shift_start = datetime.strptime("09:30", "%H:%M").time()
 
         grace_time = (datetime.combine(today, shift_start) + timedelta(minutes=5)).time()
-        late_time = (datetime.combine(today, shift_start) + timedelta(minutes=6)).time()
 
         if not attendance:
             if now_time <= shift_start:
@@ -177,7 +192,10 @@ def attendance(request):
 
         header, imgstr = image_data.split(";base64,")
         ext = header.split("/")[-1]
-        file_content = ContentFile(base64.b64decode(imgstr), name=f"{employee.employee_id}_{timezone.now().strftime('%H%M%S')}.{ext}")
+        file_content = ContentFile(
+            base64.b64decode(imgstr),
+            name=f"{employee.employee_id}_{timezone.now().strftime('%H%M%S')}.{ext}"
+        )
 
         # ---- Check-in / Check-out logic ----
         if not attendance:  # Check-in
@@ -188,7 +206,7 @@ def attendance(request):
             else:
                 remarks = "Late"
 
-            Attendance.objects.create(
+            attendance = Attendance.objects.create(
                 employee=employee,
                 date=today,
                 check_in=now_time,
@@ -197,12 +215,8 @@ def attendance(request):
                 status="Present"
             )
 
-            # Refresh attendance from DB to show correct details in template
-            attendance = Attendance.objects.filter(employee=employee, date=today).first()
-            ctx["attendance"] = attendance
-
             ctx.update(
-                message=f"Checked in at {attendance.check_in.strftime('%H:%M:%S')} ({attendance.remarks})",
+                message=f"Checked in at {attendance.check_in.strftime('%I:%M:%S %p')} ({attendance.remarks})",
                 message_class="success",
                 preview_url=attendance.check_in_image.url
             )
@@ -210,24 +224,22 @@ def attendance(request):
         elif attendance and not attendance.check_out:  # Check-out
             attendance.check_out = now_time
             attendance.check_out_image = file_content
+            # Keep the original check-in remark
             attendance.save()
 
-            # Refresh attendance from DB to show correct details in template
-            attendance = Attendance.objects.filter(employee=employee, date=today).first()
-            ctx["attendance"] = attendance
-
             ctx.update(
-                message=f"Checked out at {attendance.check_out.strftime('%H:%M:%S')}",
+                message=f"Checked out at {attendance.check_out.strftime('%I:%M:%S %p')}",
                 message_class="success",
                 preview_url=attendance.check_out_image.url
             )
 
         else:  # Already checked out
             ctx.update(
-                message=f"Already checked out at {attendance.check_out.strftime('%H:%M:%S')}",
+                message=f"Already checked out at {attendance.check_out.strftime('%I:%M:%S %p')}",
                 message_class="info"
             )
 
+        ctx["attendance"] = attendance
         return render(request, "dashboard/attendance.html", ctx)
 
     return render(request, "dashboard/attendance.html", ctx)

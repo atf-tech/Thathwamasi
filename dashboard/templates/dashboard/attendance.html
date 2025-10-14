@@ -66,7 +66,7 @@
             {% if message %}
               <div class="alert alert-{{ message_class|default:'info' }} text-center">{{ message }}</div>
             {% endif %}
-
+ 
             <!-- STEP 1: Verify Phone -->
             {% if not show_step2 %}
               <p class="text-center">
@@ -92,9 +92,12 @@
                   <div class="mt-2">
                     ⏰ <strong>Current Time:</strong> {{ current_time }}
                   </div>
+                  {% if not attendance.check_out %}
                   <div class="mt-1">
-                    📝 <strong>Remarks:</strong> {{ attendance.remarks|default:'-' }}
+                    📝 <strong>Remarks:</strong> {{ attendance.remarks|default:"-" }}
                   </div>
+                {% endif %}
+
 
                   <div class="d-grid mt-3">
                     <a href="{% url 'employee_checkin' %}" class="btn btn-outline-primary btn-lg">➡️ New Attendance</a>
@@ -107,7 +110,7 @@
                 {% endif %}
 
                 <div class="text-center mb-3">
-                  <h5 class="mb-1">{{ employee.employee_name }} - {{ employee.employee_designation }}</h5>
+                  <h5 class="mb-1">{{ employee.employee_name }} - {{ employee.department }}</h5>
                   <div class="text-muted">📱 {{ employee.employee_phone }}</div>
                   <div class="mt-2">
                     ⏰ <strong>Current Time:</strong> {{ current_time }}
@@ -130,12 +133,32 @@
                 {% endif %}
 
                 {% if not attendance %}
-                  <h6 class="text-center mb-3">You have not checked in today. Please check in now.</h6>
+                  <!-- Not Checked In -->
+                  <div class="alert text-center rounded-3 shadow-sm py-3 border-0" 
+                  style="background-color: #fff8e1; color: rgba(167, 6, 6, 1);">
+                <i class="ti ti-alert-triangle fs-4 me-2" style="color: rgba(241, 0, 8, 0.8);"></i>
+                <strong>You have not checked in today.</strong><br>
+                <span class="text-muted">Please check in now to mark your attendance.</span>
+              </div>
+
+
                 {% elif attendance and not attendance.check_out %}
-                  <h6 class="text-center mb-3">You have already checked in at {{ attendance.check_in|date:"h:i:s A" }}. Now please check out.</h6>
+                  <!-- Checked In, Awaiting Check-Out -->
+                  <div class="alert alert-success text-center rounded-3 shadow-sm py-3">
+                    <i class="ti ti-clock-check fs-4 text-success me-2"></i>
+                    <strong>Checked in at {{ attendance.check_in|date:"h:i:s A" }}</strong><br>
+                    <span class="text-muted">Now please check out when your workday ends.</span>
+                  </div>
+
                 {% else %}
-                  <div class="alert alert-info text-center">✅ Already checked out at {{ attendance.check_out|date:"h:i:s A" }}.</div>
+                  <!-- Already Checked Out -->
+                  <div class="alert alert-info text-center rounded-3 shadow-sm py-3">
+                    <i class="ti ti-calendar-check fs-4 text-info me-2"></i>
+                    <strong>Already checked out at {{ attendance.check_out|date:"h:i:s A" }}</strong><br>
+                    <span class="text-muted">Thank you! Your attendance has been successfully recorded.</span>
+                  </div>
                 {% endif %}
+
               {% endif %}
             {% endif %}
 
@@ -160,37 +183,44 @@
     <script src="{% static 'dashboard/js/script.js' %}"></script>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const video = document.getElementById('att-camera')
-        const captureBtn = document.getElementById('capture-btn')
-        const canvas = document.createElement('canvas')
-        const imageDataInput = document.getElementById('image_data')
-        const captureForm = document.getElementById('capture-form')
-      
-        if (video) {
-          navigator.mediaDevices
-            .getUserMedia({ video: { facingMode: 'user' } })
-            .then((stream) => {
-              video.srcObject = stream
-              video.play()
+    document.addEventListener('DOMContentLoaded', function () {
+    const video = document.getElementById('att-camera');
+    const captureBtn = document.getElementById('capture-btn');
+    const canvas = document.createElement('canvas');
+    const imageDataInput = document.getElementById('image_data');
+    const captureForm = document.getElementById('capture-form');
+
+    if (video) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
             })
-            .catch((err) => console.warn('Camera access denied:', err))
-        }
-      
-        if (captureBtn) {
-          captureBtn.addEventListener('click', function () {
-            canvas.width = video.videoWidth
-            canvas.height = video.videoHeight
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height)
-            const dataUrl = canvas.toDataURL('image/png')
-            imageDataInput.value = dataUrl
-      
-            captureBtn.disabled = true
-            captureBtn.innerText = 'Submitting...'
-            captureForm.submit()
-          })
-        }
-      })
-    </script>
+            .catch(err => console.warn('Camera access denied:', err));
+    }
+
+    if (captureBtn) {
+        captureBtn.addEventListener('click', function () {
+            if (!video.videoWidth || !video.videoHeight) return alert('Camera not ready');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            // Mirror horizontally so the captured image matches the preview
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const dataUrl = canvas.toDataURL('image/png');
+            imageDataInput.value = dataUrl;
+
+            captureBtn.disabled = true;
+            captureBtn.innerText = 'Submitting...';
+            captureForm.submit();
+        });
+    }
+});
+</script>
   </body>
 </html>
