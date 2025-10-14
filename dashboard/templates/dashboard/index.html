@@ -1,0 +1,175 @@
+{% extends 'dashboard/base.html' %} {% load static %}
+
+{% block title %}Dashboard || Thathwamasi HRMS{% endblock %} 
+
+
+{% block content %}
+
+
+<meta name="description" content="Thathwamasi Infotech Pvt Ltd - a trusted IT solutions company offering HRMS software, website designing, SEO, and digital advertising services. Empower your business with smart technology, creative design, and result-driven marketing strategies.">
+<meta name="keywords" content="Thathwamasi Infotech, HRMS software, website designing, web development, SEO services, digital marketing, online advertising, Google Ads, social media marketing, HR management system, payroll management, business automation, IT services company, web design agency, brand promotion, digital solutions, PPC campaigns, business growth solutions">
+<meta name="author" content="Thathwamasi Infotech Pvt Ltd">
+<meta name="robots" content="index, follow">
+
+
+<!-- Welcome Wrap -->
+<div class="card border-0">
+  <div
+    class="card-body d-flex align-items-center justify-content-between flex-wrap pb-1"
+  >
+    <div class="d-flex align-items-center mb-3">
+      <span class="avatar avatar-xl flex-shrink-0">
+        <img
+          src="{% static 'dashboard/img/profiles/avatar-31.jpg' %}"
+          class="rounded-circle"
+          alt="img"
+        />
+      </span>
+      <div class="ms-3">
+        <h3 class="">Welcome, Admin</h3>
+        <!-- <p>You have <span class="text-primary text-decoration-underline">21</span> Pending Approvals & <span
+						class="text-primary text-decoration-underline">14</span> Leave Requests</p> -->
+      </div>
+    </div>
+    <!-- <div class="d-flex align-items-center flex-wrap mb-1">
+      <a href="#" class="btn btn-primary btn-md mb-2"
+        ><i class="ti ti-user me-1"></i>Switch to Emp</a
+      >
+      <a href="#" class="btn btn-primary btn-md mb-2"
+        ><i class="ti ti-user me-1"></i>Switch to HR</a
+      >
+    </div> -->
+  </div>
+</div>
+<!-- /Welcome Wrap -->
+
+<div class="row">
+  <!-- Widget Info -->
+  <div class="col-xxl-12 d-flex">
+    <div class="row flex-fill">
+      <div class="col-md-4 d-flex">
+        <div class="card flex-fill">
+          <div class="card-body">
+            <span class="avatar rounded-circle bg-primary mb-2">
+              <i class="ti ti-calendar-share fs-16"></i>
+            </span>
+            <h6 class="fs-13 fw-medium text-default mb-1">
+              Attendance Overview
+            </h6>
+            <h3 class="">10/20</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 d-flex">
+        <div class="card flex-fill">
+          <div class="card-body">
+            <span class="avatar rounded-circle bg-info mb-2">
+              <i class="ti ti-users-group fs-16"></i>
+            </span>
+            <h6 class="fs-13 fw-medium text-default mb-1">Today Present</h6>
+            <h3 class="">25</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 d-flex">
+        <div class="card flex-fill">
+          <div class="card-body">
+            <span class="avatar rounded-circle bg-dark mb-2">
+              <i class="ti ti-user-star fs-16"></i>
+            </span>
+            <h6 class="fs-13 fw-medium text-default mb-1">Today Absent</h6>
+            <h3 class="">05</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Widget Info -->
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title">Attendance</h4>
+		<div>
+			<input type="text" class="form-control" id="datepicker" placeholder="Select a date">
+		</div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table attendance">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Emp Name</th>
+                <th>Emp ID</th>
+                <th>Check-In</th>
+                <th>Check-In Photo</th>
+                <th>Status</th>
+                <th>Remarks</th>
+                <th>Check-Out</th>
+                <th>Check-Out Photo</th>
+            </tr>
+            </thead>
+            <tbody>
+              {% for record in attendance_records %}
+            <tr>
+                <td>{{ record.date|date:"d/m/Y" }}</td>
+                <td>{{ record.employee.employee_name }}</td>
+                <td>{{ record.employee.employee_id }}</td>
+                <td>
+                    {% if record.check_in %}
+                        {{ record.check_in|time:"h:i A" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                  {% if record.check_in_image %}
+                      <img src="{{ record.check_in_image.url }}" alt="Check-in"
+                          style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #ccc;">
+                  {% else %}
+                      -
+                  {% endif %}
+              </td>
+                <td>
+                    {% if record.status == "Present" %}
+                        <span class="badge bg-success">{{ record.status }}</span>
+                    {% elif record.status == "Absent" %}
+                        <span class="badge bg-danger">{{ record.status }}</span>
+                    {% else %}
+                        <span class="badge bg-warning">{{ record.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ record.remarks|default:"-" }}</td>
+                <td>
+                    {% if record.check_out %}
+                        {{ record.check_out|time:"h:i A" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+    {% if record.check_out_image %}
+        <img src="{{ record.check_out_image.url }}" alt="Check-out"
+             style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #ccc;">
+    {% else %}
+        -
+    {% endif %}
+</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">No attendance records found.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

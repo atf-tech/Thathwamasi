@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
+    <title>Employee Attendance || Thathwamasi</title>
+
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'dashboard/img/favicon.png' %}">
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'dashboard/img/apple-touch-icon.png' %}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/css/bootstrap.min.css' %}">
+
+    <!-- Feather CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/plugins/icons/feather/feather.css' %}">
+
+    <!-- Tabler Icon CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/plugins/tabler-icons/tabler-icons.min.css' %}">
+
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/plugins/fontawesome/css/fontawesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/plugins/fontawesome/css/all.min.css' %}">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+
+    <style>
+      body {
+        background: linear-gradient(135deg, #f7fbff, #e8f6ff);
+        min-height: 100vh;
+      }
+      .card {
+        border-radius: 14px;
+        position: relative;
+      }
+      video,
+      img {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        max-width: 100%;
+      }
+      .checkin-success {
+        display: none;
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        z-index: 15;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-5">
+          <div class="card shadow-sm p-4">
+            <div class="text-center mb-3">
+              <img src="{% static 'dashboard/img/logo/logo.png' %}" class="w-50" alt="Logo" />
+            </div>
+
+            {% if message %}
+              <div class="alert alert-{{ message_class|default:'info' }} text-center">{{ message }}</div>
+            {% endif %}
+
+            <!-- STEP 1: Verify Phone -->
+            {% if not show_step2 %}
+              <p class="text-center">
+                Please enter your <strong>registered phone number</strong> to continue.
+              </p>
+              <form method="post" action="{% url 'employee_checkin' %}">
+                {% csrf_token %}
+                <input type="hidden" name="step" value="verify" />
+                <div class="mb-3">
+                  <input type="number" name="phone_no" class="form-control form-control-lg" placeholder="Enter Mobile No" required autofocus />
+                </div>
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-primary btn-lg">Verify</button>
+                </div>
+              </form>
+            {% else %}
+              <!-- Show captured photo & details if exists -->
+              {% if preview_url %}
+                <div class="text-center mb-3">
+                  <img src="{{ preview_url }}" alt="Captured photo" class="img-fluid mb-3" style="max-height:300px;" />
+                  <h5 class="mb-1">{{ employee.employee_name }} - {{ employee.employee_designation }}</h5>
+                  <div class="text-muted">📱 {{ employee.employee_phone }}</div>
+                  <div class="mt-2">
+                    ⏰ <strong>Current Time:</strong> {{ current_time }}
+                  </div>
+                  <div class="mt-1">
+                    📝 <strong>Remarks:</strong> {{ attendance.remarks|default:'-' }}
+                  </div>
+
+                  <div class="d-grid mt-3">
+                    <a href="{% url 'employee_checkin' %}" class="btn btn-outline-primary btn-lg">➡️ New Attendance</a>
+                  </div>
+                </div>
+              {% else %}
+                <!-- Show camera only if not checked in or not checked out -->
+                {% if not attendance or not attendance.check_out %}
+                  <video id="att-camera" autoplay playsinline class="my-3" style="width:100%; height:300px; transform: scaleX(-1);"></video>
+                {% endif %}
+
+                <div class="text-center mb-3">
+                  <h5 class="mb-1">{{ employee.employee_name }} - {{ employee.employee_designation }}</h5>
+                  <div class="text-muted">📱 {{ employee.employee_phone }}</div>
+                  <div class="mt-2">
+                    ⏰ <strong>Current Time:</strong> {{ current_time }}
+                  </div>
+                  <div class="mt-1">
+                    📝 <strong>Remarks:</strong> {{ pre_remarks|default:'-' }}
+                  </div>
+                </div>
+
+                {% if not attendance or not attendance.check_out %}
+                  <form method="post" id="capture-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="step" value="capture" />
+                    <input type="hidden" name="phone_no" value="{{ employee.employee_phone }}" />
+                    <input type="hidden" name="image_data" id="image_data" />
+                    <div class="d-grid mt-2">
+                      <button type="button" id="capture-btn" class="btn btn-primary btn-lg">Capture & Submit</button>
+                    </div>
+                  </form>
+                {% endif %}
+
+                {% if not attendance %}
+                  <h6 class="text-center mb-3">You have not checked in today. Please check in now.</h6>
+                {% elif attendance and not attendance.check_out %}
+                  <h6 class="text-center mb-3">You have already checked in at {{ attendance.check_in|date:"h:i:s A" }}. Now please check out.</h6>
+                {% else %}
+                  <div class="alert alert-info text-center">✅ Already checked out at {{ attendance.check_out|date:"h:i:s A" }}.</div>
+                {% endif %}
+              {% endif %}
+            {% endif %}
+
+            <div class="checkin-success bg-success text-white text-center p-3 rounded" id="checkInSuccess">Attendance Successful!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+       <!-- /Main Wrapper -->
+
+    <!-- jQuery -->
+    <script src="{% static 'dashboard/js/jquery-3.7.1.min.js' %}"></script>
+
+    <!-- Bootstrap Core JS -->
+    <script src="{% static 'dashboard/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Feather Icon JS -->
+    <script src="{% static 'dashboard/js/feather.min.js' %}"></script>
+
+    <!-- Custom JS -->
+    <script src="{% static 'dashboard/js/script.js' %}"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const video = document.getElementById('att-camera')
+        const captureBtn = document.getElementById('capture-btn')
+        const canvas = document.createElement('canvas')
+        const imageDataInput = document.getElementById('image_data')
+        const captureForm = document.getElementById('capture-form')
+      
+        if (video) {
+          navigator.mediaDevices
+            .getUserMedia({ video: { facingMode: 'user' } })
+            .then((stream) => {
+              video.srcObject = stream
+              video.play()
+            })
+            .catch((err) => console.warn('Camera access denied:', err))
+        }
+      
+        if (captureBtn) {
+          captureBtn.addEventListener('click', function () {
+            canvas.width = video.videoWidth
+            canvas.height = video.videoHeight
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height)
+            const dataUrl = canvas.toDataURL('image/png')
+            imageDataInput.value = dataUrl
+      
+            captureBtn.disabled = true
+            captureBtn.innerText = 'Submitting...'
+            captureForm.submit()
+          })
+        }
+      })
+    </script>
+  </body>
+</html>

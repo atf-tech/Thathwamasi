@@ -1,0 +1,160 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+	<meta name="description" content="Login to Thathwamasi Infotech – access your HRMS dashboard, manage employees, monitor attendance, and explore digital services including Website Designing, SEO, and Ads solutions.">
+	<meta name="keywords" content="Thathwamasi HRMS login, employee portal, HR software login, HR dashboard, website designing, SEO services, digital marketing, payroll management, HR system, business solutions">
+	<meta name="author" content="Thathwamasi Infotech Pvt Ltd">
+	<meta name="robots" content="noindex, nofollow">
+
+	<title>{% block title %}Login || Thathwamasi HRMS{% endblock %}</title>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
+
+	<!-- Apple Touch Icon -->
+	<link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="{% static 'dashboard/css/bootstrap.min.css' %}">
+
+	<!-- Feather CSS -->
+	<link rel="stylesheet" href="{% static 'dashboard/plugins/icons/feather/feather.css' %}">
+
+	<!-- Tabler Icon CSS -->
+	<link rel="stylesheet" href="{% static 'dashboard/plugins/tabler-icons/tabler-icons.min.css' %}">
+
+	<!-- Fontawesome CSS -->
+	<link rel="stylesheet" href="{% static 'dashboard/plugins/fontawesome/css/fontawesome.min.css' %}">
+	<link rel="stylesheet" href="{% static 'dashboard/plugins/fontawesome/css/all.min.css' %}">
+
+	<!-- Main CSS -->
+	<link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+
+</head>
+
+<body class="bg-white">
+
+
+
+	<!-- Main Wrapper -->
+	<div class="main-wrapper">
+
+		<div class="container-fuild">
+			<div class="w-100 overflow-hidden position-relative flex-wrap d-block vh-100">
+				<div class="row">
+					<div class="col-lg-5">
+						<div
+							class="login-background position-relative d-lg-flex align-items-center justify-content-center d-none flex-wrap vh-100">
+							<div class="bg-overlay-img">
+								<img src="{% static 'dashboard/img/bg/bg-01.png' %}" class="bg-1" alt="Img">
+								<img src="{% static 'dashboard/img/bg/bg-02.png' %}" class="bg-2" alt="Img">
+								<img src="{% static 'dashboard/img/bg/bg-03.png' %}" class="bg-3" alt="Img">
+							</div>
+							<div class="authentication-card w-100">
+								<div class="authen-overlay-item border w-100">
+									<h1 class="text-white display-1">Empowering people <br> through seamless HR <br>
+										management.</h1>
+									<div class="my-4 mx-auto authen-overlay-img">
+										<img src="{% static 'dashboard/img/bg/authentication-bg-01.png' %}" alt="Img">
+									</div>
+									<div>
+										<p class="text-white fs-20 fw-semibold text-center">Efficiently manage your
+											workforce, streamline <br> operations effortlessly.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-7 col-md-12 col-sm-12">
+						<div class="row justify-content-center align-items-center vh-100 overflow-auto flex-wrap">
+							<div class="col-md-7 mx-auto vh-100">
+								<form method="post" action="{% url 'login' %}" class="vh-100">
+    									{% csrf_token %}
+
+									<div class="vh-100 d-flex flex-column justify-content-between p-4 pb-0">
+										<div class=" mx-auto mb-2 text-center">
+											<img src="{% static 'dashboard/img/logo/logo.png' %}" class="w-50"
+												alt="Logo">
+										</div>
+										<div class="">
+											<div class="text-center mb-3">
+												<h2 class="mb-2">Sign In</h2>
+												<p class="mb-0">Please enter your details to sign in</p>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Email Address</label>
+												<div class="input-group">
+													<input type="text" value="" name="username" id="username" class="form-control border-end-0">
+													<span class="input-group-text border-start-0">
+														<i class="ti ti-mail"></i>
+													</span>
+												</div>
+											</div>
+											<div class="mb-3">
+												<label class="form-label">Password</label>
+												<div class="pass-group">
+													<input type="password" name="password" id="password" class="pass-input form-control">
+													<span class="ti toggle-password ti-eye-off"></span>
+												</div>
+											</div>
+											<div class="d-flex align-items-center justify-content-between mb-3">
+												<div class="d-flex align-items-center">
+													<div class="form-check form-check-md mb-0">
+														<input class="form-check-input" id="remember_me"
+															type="checkbox">
+														<label for="remember_me" class="form-check-label mt-0">Remember
+															Me</label>
+													</div>
+												</div>
+												{% comment %} <div class="text-end">
+													<a href="forgot-password.html" class="link-danger">Forgot
+														Password?</a>
+												</div> {% endcomment %}
+											</div>
+
+											{% if messages %}
+											<div class="mb-3">
+												{% for message in messages %}
+												<div class="alert alert-danger">{{ message }}</div>
+												{% endfor %}
+											</div>
+											{% endif %}
+											<div class="mb-3">
+												<button type="submit" class="btn btn-primary w-100">Sign In</button>
+											</div>
+										</div>
+										<div class="mt-5 pb-4 text-center">
+											<p class="mb-0 text-gray-9">Copyright &copy; 2025 - ThathwamasiHRMS</p>
+										</div>
+									</div>
+								</form>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Main Wrapper -->
+
+	<!-- jQuery -->
+	<script src="{% static 'dashboard/js/jquery-3.7.1.min.js' %}"></script>
+
+	<!-- Bootstrap Core JS -->
+	<script src="{% static 'dashboard/js/bootstrap.bundle.min.js' %}"></script>
+
+	<!-- Feather Icon JS -->
+	<script src="{% static 'dashboard/js/feather.min.js' %}"></script>
+
+	<!-- Custom JS -->
+	<script src="{% static 'dashboard/js/script.js' %}"></script>
+
+</body>
+</html>
