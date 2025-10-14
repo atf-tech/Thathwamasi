@@ -1,14 +1,10 @@
+{% extends 'dashboard/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Management - Thathwamasi HRMS</title>
-    <link href="{% static 'dashboard/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'dashboard/plugins/fontawesome/css/all.min.css' %}" rel="stylesheet">
-    <link href="{% static 'dashboard/css/style.css' %}" rel="stylesheet">
+{% block title %}Dashboard || Thathwamasi HRMS{% endblock %}
+
+{% block content %}
+
     <style>
         /* Optional custom styles */
         .form-section {
@@ -31,7 +27,7 @@
             border-radius: 50%;
         }
     </style>
-</head>
+
 
 <body class="bg-light">
 
@@ -182,9 +178,6 @@
 
 </div>
 
-<script src="{% static 'dashboard/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'dashboard/js/jquery-3.7.1.min.js' %}"></script>
-</body>
 
 <script>
     const editButtons = document.querySelectorAll('.edit-btn');
@@ -203,5 +196,4 @@
     });
 </script>
 
-
-</html>
+{% endblock %}

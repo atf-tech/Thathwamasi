@@ -65,13 +65,13 @@
                 <li class="menu-title"><span>CRM</span></li>
                 <li>
                     <ul>
-                        <li class="active">
+                        <li class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                         <a href="{% url 'home' %}">
                             <i class="ti ti-home"></i><span>Home</span>
                         </a>
                     </li>
                 
-                    <li>
+                    <li class="{% if request.resolver_match.url_name == 'employee' %}active{% endif %}">
                         <a href="{% url 'employee' %}">
                             <i class="ti ti-users"></i><span>Employee Registration</span>
                         </a>
