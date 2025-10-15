@@ -190,6 +190,8 @@ def attendance(request):
             ctx.update(message="Please capture a photo.", message_class="danger")
             return render(request, "dashboard/attendance.html", ctx)
 
+        address = request.POST.get("address", "").strip()
+
         header, imgstr = image_data.split(";base64,")
         ext = header.split("/")[-1]
         file_content = ContentFile(
@@ -198,7 +200,7 @@ def attendance(request):
         )
 
         # ---- Check-in / Check-out logic ----
-        if not attendance:  # Check-in
+        if not attendance: 
             if now_time <= shift_start:
                 remarks = "On Time"
             elif now_time <= grace_time:
@@ -212,7 +214,8 @@ def attendance(request):
                 check_in=now_time,
                 check_in_image=file_content,
                 remarks=remarks,
-                status="Present"
+                status="Present",
+                check_in_location=address  
             )
 
             ctx.update(
@@ -221,10 +224,10 @@ def attendance(request):
                 preview_url=attendance.check_in_image.url
             )
 
-        elif attendance and not attendance.check_out:  # Check-out
+        elif attendance and not attendance.check_out:
             attendance.check_out = now_time
             attendance.check_out_image = file_content
-            # Keep the original check-in remark
+            attendance.check_out_location = address 
             attendance.save()
 
             ctx.update(
@@ -233,7 +236,7 @@ def attendance(request):
                 preview_url=attendance.check_out_image.url
             )
 
-        else:  # Already checked out
+        else:  
             ctx.update(
                 message=f"Already checked out at {attendance.check_out.strftime('%I:%M:%S %p')}",
                 message_class="info"

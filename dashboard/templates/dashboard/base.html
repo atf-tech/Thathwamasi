@@ -523,5 +523,37 @@
 	<script src="{% static 'dashboard/js/script.js' %}"></script>
 	<script src="{% static 'dashboard/js/custom.js' %}"></script>
 
+
+
+
+
+<script>
+  (function () {
+    let inactivityTime = 0;
+    const logoutAfter = 5 * 60 * 1000; // 5 minutes in ms
+    let logoutTimer;
+
+    function resetTimer() {
+      clearTimeout(logoutTimer);
+      logoutTimer = setTimeout(autoLogout, logoutAfter);
+    }
+
+    function autoLogout() {
+      // Optional confirmation before logout
+      // if (!confirm("You have been inactive for 5 minutes. Do you want to stay logged in?")) {
+      window.location.href = "{% url 'logout' %}";
+      // }
+    }
+
+    // Reset timer on user activity
+    ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, resetTimer, false);
+    });
+
+    // Start initial timer
+    resetTimer();
+  })();
+</script>
+
 </body>
 </html>

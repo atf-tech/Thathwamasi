@@ -41,8 +41,8 @@ class EmployeeAdmin(admin.ModelAdmin):
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
     list_display = [
-        'employee', 'date', 'check_in', 'check_in_image_tag', 
-        'check_out', 'check_out_image_tag', 'status', 'remarks', 'created_at'
+        'employee', 'date', 'check_in', 'check_in_image_tag', 'check_in_location',
+        'check_out', 'check_out_image_tag','check_out_location' ,'status', 'remarks', 'created_at'
     ]
     list_filter = ['status', 'remarks', 'date']
     search_fields = ['employee__employee_name', 'employee__employee_id']

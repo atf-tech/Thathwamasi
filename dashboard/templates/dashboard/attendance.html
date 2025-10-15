@@ -55,7 +55,7 @@
   </head>
 
   <body>
-    <div class="container py-5">
+    <div class="container py-0">
       <div class="row justify-content-center">
         <div class="col-md-5">
           <div class="card shadow-sm p-4">
@@ -126,6 +126,8 @@
                     <input type="hidden" name="step" value="capture" />
                     <input type="hidden" name="phone_no" value="{{ employee.employee_phone }}" />
                     <input type="hidden" name="image_data" id="image_data" />
+                    <input type="hidden" name="address" id="address" />
+
                     <div class="d-grid mt-2">
                       <button type="button" id="capture-btn" class="btn btn-primary btn-lg">Capture & Submit</button>
                     </div>
@@ -182,13 +184,57 @@
     <!-- Custom JS -->
     <script src="{% static 'dashboard/js/script.js' %}"></script>
 
+
+    
+    
+  <script>
+document.addEventListener('DOMContentLoaded', function () {
+  const addressInput = document.getElementById('address');
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      async function (position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        try {
+          // Fetch readable address using OpenStreetMap, force English
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&accept-language=en`
+          );
+          const data = await res.json();
+
+          if (data && data.display_name) {
+            addressInput.value = data.display_name; 
+          } else {
+            addressInput.value = `${lat}, ${lon}`;
+          }
+        } catch (err) {
+          console.warn('Reverse geocode failed:', err);
+          addressInput.value = `${lat}, ${lon}`;
+        }
+      },
+      function (error) {
+        console.warn('Location permission denied or unavailable:', error);
+      },
+      { enableHighAccuracy: true }
+    );
+  } else {
+    console.warn('Geolocation not supported by this browser.');
+  }
+});
+</script>
+
+
+
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const video = document.getElementById('att-camera');
     const captureBtn = document.getElementById('capture-btn');
     const canvas = document.createElement('canvas');
     const imageDataInput = document.getElementById('image_data');
     const captureForm = document.getElementById('capture-form');
+    const addressInput = document.getElementById('address');
 
     if (video) {
         navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
@@ -199,15 +245,23 @@
             .catch(err => console.warn('Camera access denied:', err));
     }
 
+    const checkLocationReady = () => {
+        if (!addressInput.value || addressInput.value.trim() === "") {
+            alert("Location is required! Please allow location access.");
+            return false;
+        }
+        return true;
+    };
+
     if (captureBtn) {
         captureBtn.addEventListener('click', function () {
             if (!video.videoWidth || !video.videoHeight) return alert('Camera not ready');
+            if (!checkLocationReady()) return;
 
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
 
             const ctx = canvas.getContext('2d');
-            // Mirror horizontally so the captured image matches the preview
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -222,5 +276,29 @@
     }
 });
 </script>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const successAlert = document.querySelector('.alert-success');
+    const previewImage = document.querySelector('img[src*="media/"]'); // image from captured photo
+
+    if (successAlert && previewImage) {
+      // Add info text
+      const msg = document.createElement('div');
+      msg.classList.add('text-muted', 'mt-2');
+      msg.textContent = "Redirecting to new attendance page in 3 seconds...";
+      successAlert.appendChild(msg);
+
+      // Redirect after 3 seconds
+      setTimeout(function () {
+        window.location.href = "{% url 'employee_checkin' %}";
+      }, 3000);
+    }
+  });
+</script>
+
+
   </body>
 </html>

@@ -31,7 +31,6 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'thathwamasiinfotech.in',
     'www.thathwamasiinfotech.in',  
-     
 ]
 
 
@@ -146,3 +145,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
+SESSION_COOKIE_AGE = 300   # 5 minutes (in seconds)
+SESSION_SAVE_EVERY_REQUEST = True  # reset timer on each request

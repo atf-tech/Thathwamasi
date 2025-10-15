@@ -1,197 +1,247 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Dashboard || Thathwamasi HRMS{% endblock %}
+{% block title %}
+  Dashboard || Thathwamasi HRMS
+{% endblock %}
 
 {% block content %}
-<meta name="description" content="Thathwamasi Infotech Pvt Ltd - a trusted IT solutions company offering HRMS software, website designing, SEO, and digital advertising services. Empower your business with smart technology, creative design, and result-driven marketing strategies.">
-<meta name="keywords" content="Thathwamasi Infotech, HRMS software, website designing, web development, SEO services, digital marketing, online advertising, Google Ads, social media marketing, HR management system, payroll management, business automation, IT services company, web design agency, brand promotion, digital solutions, PPC campaigns, business growth solutions">
-<meta name="author" content="Thathwamasi Infotech Pvt Ltd">
-<meta name="robots" content="index, follow">
+  <meta name="description" content="Thathwamasi Infotech Pvt Ltd - a trusted IT solutions company offering HRMS software, website designing, SEO, and digital advertising services. Empower your business with smart technology, creative design, and result-driven marketing strategies." />
+  <meta name="keywords" content="Thathwamasi Infotech, HRMS software, website designing, web development, SEO services, digital marketing, online advertising, Google Ads, social media marketing, HR management system, payroll management, business automation, IT services company, web design agency, brand promotion, digital solutions, PPC campaigns, business growth solutions" />
+  <meta name="author" content="Thathwamasi Infotech Pvt Ltd" />
+  <meta name="robots" content="index, follow" />
 
-<!-- Welcome Wrap -->
-<div class="card border-0">
-  <div class="card-body d-flex align-items-center justify-content-between flex-wrap pb-1">
-    <div class="d-flex align-items-center mb-3">
-      <span class="avatar avatar-xl flex-shrink-0">
-        <img src="{% static 'dashboard/img/logo/small.png' %}" class="rounded-circle" alt="img" />
-      </span>
-      <div class="ms-3">
-        <h3>Welcome, Team</h3>
+  <!-- Welcome Wrap -->
+  <div class="card border-0">
+    <div class="card-body d-flex align-items-center justify-content-between flex-wrap pb-1">
+      <div class="d-flex align-items-center mb-3">
+        <span class="avatar avatar-xl flex-shrink-0"><img src="{% static 'dashboard/img/logo/small.png' %}" class="rounded-circle" alt="img" /></span>
+        <div class="ms-3">
+          <h3>Welcome Team,</h3>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<!-- /Welcome Wrap -->
+  <!-- /Welcome Wrap -->
 
-<div class="row">
-  <!-- Widget Info -->
-  <div class="col-xxl-12 d-flex">
-    <div class="row flex-fill">
-      <div class="col-md-4 d-flex">
-        <div class="card flex-fill">
-          <div class="card-body">
-            <span class="avatar rounded-circle bg-primary mb-2">
-              <i class="ti ti-calendar-share fs-16"></i>
-            </span>
-            <h6 class="fs-13 fw-medium text-default mb-1">Attendance Overview</h6>
-            <h3>{{ attendance_overview }}</h3>
+  <div class="row">
+    <!-- Widget Info -->
+    <div class="col-xxl-12 d-flex">
+      <div class="row flex-fill">
+        <div class="col-md-4 d-flex">
+          <div class="card flex-fill">
+            <div class="card-body">
+              <span class="avatar rounded-circle bg-primary mb-2"><i class="ti ti-calendar-share fs-16"></i></span>
+              <h6 class="fs-13 fw-medium text-default mb-1">Attendance Overview</h6>
+              <h3>{{ attendance_overview }}</h3>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-4 d-flex">
-        <div class="card flex-fill">
-          <div class="card-body">
-            <span class="avatar rounded-circle bg-info mb-2">
-              <i class="ti ti-users-group fs-16"></i>
-            </span>
-            <h6 class="fs-13 fw-medium text-default mb-1">Today Present</h6>
-            <h3>{{ present_today }}</h3>
+        <div class="col-md-4 d-flex">
+          <div class="card flex-fill">
+            <div class="card-body">
+              <span class="avatar rounded-circle bg-info mb-2"><i class="ti ti-users-group fs-16"></i></span>
+              <h6 class="fs-13 fw-medium text-default mb-1">Today Present</h6>
+              <h3>{{ present_today }}</h3>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-4 d-flex">
-        <div class="card flex-fill">
-          <div class="card-body">
-            <span class="avatar rounded-circle bg-dark mb-2">
-              <i class="ti ti-user-star fs-16"></i>
-            </span>
-            <h6 class="fs-13 fw-medium text-default mb-1">Today Absent</h6>
-            <h3>{{ absent_today }}</h3>
+        <div class="col-md-4 d-flex">
+          <div class="card flex-fill">
+            <div class="card-body">
+              <span class="avatar rounded-circle bg-dark mb-2"><i class="ti ti-user-star fs-16"></i></span>
+              <h6 class="fs-13 fw-medium text-default mb-1">Today Absent</h6>
+              <h3>{{ absent_today }}</h3>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- /Widget Info -->
   </div>
-  <!-- /Widget Info -->
-</div>
 
-<div class="row">
-  <div class="col-sm-12">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h4 class="card-title">Attendance</h4>
-        
-      </div>
-      <div class="card-body">
-        <div class="row mb-3">
-    <div class="col-md-6">
-      <label for="empFilter" class="form-label">Filter by Employee:</label>
-      <select id="empFilter" class="form-select">
-        <option value="">All Employees</option>
-        {% for record in attendance_records %}
-          <option value="{{ record.employee.employee_name }}">{{ record.employee.employee_name }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-6">
-      <label for="dateFilter" class="form-label">Filter by Date:</label>
-      <input type="date" id="dateFilter" class="form-control">
-    </div>
-  </div>
-        <div class="table-responsive">
-          <table class="table attendance">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Emp Name</th>
-                <th>Emp ID</th>
-                <th>Check-In</th>
-                <th>Check-In Photo</th>
-                <th>Status</th>
-                <th>Remarks</th>
-                <th>Check-Out</th>
-                <th>Check-Out Photo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for record in attendance_records %}
-              <tr>
-                <td>{{ record.date|date:"d/m/Y" }}</td>
-                <td>{{ record.employee.employee_name }}</td>
-                <td>{{ record.employee.employee_id }}</td>
-                <td>
-                  {% if record.check_in %}
-                    {{ record.check_in|time:"h:i A" }}
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>
-                  {% if record.check_in_image %}
-                    <img src="{{ record.check_in_image.url }}" alt="Check-in" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #ccc;">
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>
-                  {% if record.status == "Present" %}
-                    <span class="badge bg-success">{{ record.status }}</span>
-                  {% elif record.status == "Absent" %}
-                    <span class="badge bg-danger">{{ record.status }}</span>
-                  {% else %}
-                    <span class="badge bg-warning">{{ record.status }}</span>
-                  {% endif %}
-                </td>
-                <td>{{ record.remarks|default:"-" }}</td>
-                <td>
-                  {% if record.check_out %}
-                    {{ record.check_out|time:"h:i A" }}
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>
-                  {% if record.check_out_image %}
-                    <img src="{{ record.check_out_image.url }}" alt="Check-out" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #ccc;">
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="9" class="text-center">No attendance records found.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="card-title">Attendance</h4>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="empFilter" class="form-label">Filter by Employee:</label>
+              <select id="empFilter" class="form-select">
+                <option value="">All Employees</option>
+                {% for record in attendance_records %}
+                  <option value="{{ record.employee.employee_name }}">{{ record.employee.employee_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="dateFilter" class="form-label">Filter by Date:</label>
+              <input type="date" id="dateFilter" class="form-control" />
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table attendance">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Emp Name</th>
+                  <th>Emp ID</th>
+                  <th>Check-In</th>
+                  <th>Check-In Photo</th>
+                  <th>Check-In Location</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                  <th>Check-Out</th>
+                  <th>Check-Out Photo</th>
+                  <th>Check-Out Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for record in attendance_records %}
+                  <tr>
+                    <td>{{ record.date|date:'d/m/Y' }}</td>
+                    <td>{{ record.employee.employee_name }}</td>
+                    <td>{{ record.employee.employee_id }}</td>
+                    <td>
+                      {% if record.check_in %}
+                        {{ record.check_in|time:'h:i A' }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if record.check_in_image %}
+                        <img src="{{ record.check_in_image.url }}" alt="Check-in" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #ccc;" />
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      {% if record.check_in_location %}
+                        <span tabindex="0" data-bs-toggle="popover" data-bs-trigger="click" data-bs-placement="top" data-bs-title="Full Address" data-bs-content="{{ record.check_in_location|default:'-' }}">{{ record.check_in_location|truncatewords:2 }}</span>
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+
+                    <td>
+                      {% if record.status == 'Present' %}
+                        <span class="badge bg-success">{{ record.status }}</span>
+                      {% elif record.status == 'Absent' %}
+                        <span class="badge bg-danger">{{ record.status }}</span>
+                      {% else %}
+                        <span class="badge bg-warning">{{ record.status }}</span>
+                      {% endif %}
+                    </td>
+                  <td>
+                    {% if record.remarks %}
+                      {% if record.remarks == "On Time" %}
+                        <span class="badge bg-success">{{ record.remarks }}</span>
+                      {% elif record.remarks == "Grace" %}
+                        <span class="badge bg-warning text-dark">{{ record.remarks }}</span>
+                      {% elif record.remarks == "Late" %}
+                        <span class="badge bg-danger">{{ record.remarks }}</span>
+                      {% elif record.remarks == "Permission" %}
+                        <span class="badge bg-info text-dark">{{ record.remarks }}</span>
+                      {% elif record.remarks == "Half Day" %}
+                        <span class="badge bg-secondary">{{ record.remarks }}</span>
+                      {% else %}
+                        {{ record.remarks }}
+                      {% endif %}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+
+                    <td>
+                      {% if record.check_out %}
+                        {{ record.check_out|time:'h:i A' }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if record.check_out_image %}
+                        <img src="{{ record.check_out_image.url }}" alt="Check-out" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #ccc;" />
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      {% if record.check_out_location %}
+                        <span tabindex="0" data-bs-toggle="popover" data-bs-trigger="click" data-bs-placement="top" data-bs-title="Full Address" data-bs-content="{{ record.check_out_location|default:'-' }}">{{ record.check_out_location|truncatewords:2 }}</span>
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="9" class="text-center">No attendance records found.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const empFilter = document.getElementById('empFilter');
-  const dateFilter = document.getElementById('dateFilter');
-  const table = document.querySelector('.table.attendance tbody');
-  const rows = table.querySelectorAll('tr');
-
-  function filterTable() {
-    const empVal = empFilter.value.toLowerCase();
-    const dateVal = dateFilter.value;
-
-    rows.forEach(row => {
-      const empName = row.children[1].textContent.toLowerCase();
-      const date = row.children[0].textContent.split('/').reverse().join('-'); 
-
-      let empMatch = empVal === '' || empName === empVal;
-      let dateMatch = dateVal === '' || date === dateVal;
-
-      if (empMatch && dateMatch) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const empFilter = document.getElementById('empFilter')
+      const dateFilter = document.getElementById('dateFilter')
+      const table = document.querySelector('.table.attendance tbody')
+      const rows = table.querySelectorAll('tr')
+    
+      function filterTable() {
+        const empVal = empFilter.value.toLowerCase()
+        const dateVal = dateFilter.value
+    
+        rows.forEach((row) => {
+          const empName = row.children[1].textContent.toLowerCase()
+          const date = row.children[0].textContent.split('/').reverse().join('-')
+    
+          let empMatch = empVal === '' || empName === empVal
+          let dateMatch = dateVal === '' || date === dateVal
+    
+          if (empMatch && dateMatch) {
+            row.style.display = ''
+          } else {
+            row.style.display = 'none'
+          }
+        })
       }
-    });
-  }
+    
+      empFilter.addEventListener('change', filterTable)
+      dateFilter.addEventListener('change', filterTable)
+    })
+  </script>
 
-  empFilter.addEventListener('change', filterTable);
-  dateFilter.addEventListener('change', filterTable);
-});
-</script>
-
-
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize all popovers
+      var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+      var popoverList = popoverTriggerList.map(function (el) {
+        return new bootstrap.Popover(el, {
+          html: true,
+          trigger: 'focus', // Focus trigger allows clicking outside to close
+          container: 'body'
+        })
+      })
+    
+      // Close popovers when clicking anywhere outside
+      document.addEventListener('click', function (e) {
+        popoverList.forEach(function (pop) {
+          if (!pop._element.contains(e.target)) {
+            pop.hide()
+          }
+        })
+      })
+    })
+  </script>
 {% endblock %}
