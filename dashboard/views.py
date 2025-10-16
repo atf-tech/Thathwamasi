@@ -55,6 +55,8 @@ def logout_view(request):
     return redirect('login')
 
 
+
+
 @login_required
 def keep_alive(request):
     """Keeps the session alive by marking it as modified."""
@@ -63,20 +65,32 @@ def keep_alive(request):
 
 
 
-#Dashboard Home
+
+
 @login_required(login_url='/dashboard/login')
 def home(request):
-    attendance_records = (
-        Attendance.objects
-        .select_related('employee')
-        .order_by('-date', '-check_in', '-check_out') 
-    )
+    emp_name = request.GET.get('employee', '').strip()
+    date_str = request.GET.get('date', '').strip() 
+
+    attendance_records = Attendance.objects.select_related('employee').order_by('-date', '-check_in', '-check_out')
+
+    if emp_name:
+        attendance_records = attendance_records.filter(employee__employee_name=emp_name)
+
+    if date_str:
+        try:
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+            attendance_records = attendance_records.filter(date=date_obj)
+        except ValueError:
+            pass
 
     total_employees = Employee.objects.filter(employee_status=True).count()
     today = timezone.localdate()
     present_today = Attendance.objects.filter(date=today).count()
     absent_today = total_employees - present_today
     all_present = absent_today == 0
+
+    employee_list = Employee.objects.filter(employee_status=True).values_list('employee_name', flat=True).distinct()
 
     return render(request, 'dashboard/index.html', {
         'attendance_records': attendance_records,
@@ -85,6 +99,9 @@ def home(request):
         'absent_today': absent_today,
         'attendance_overview': f"{present_today}/{total_employees}",
         'all_present': all_present,
+        'employee_list': employee_list,
+        'selected_employee': emp_name,
+        'selected_date': date_str,
     })
 
 
@@ -164,13 +181,11 @@ def attendance(request):
         today = timezone.localdate()
         now_time = timezone.localtime().time()
 
-        # Get today's attendance if exists
         attendance = Attendance.objects.filter(employee=employee, date=today).first()
         ctx["attendance"] = attendance
         ctx["current_time"] = timezone.localtime().strftime("%I:%M:%S %p")
         ctx["show_step2"] = True
 
-        # ---- Calculate preliminary remarks before check-in ----
         if employee.shift_timings:
             try:
                 shift_start = datetime.strptime(employee.shift_timings.split("to")[0].strip(), "%H:%M").time()

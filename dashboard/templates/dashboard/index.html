@@ -6,8 +6,8 @@
 {% endblock %}
 
 {% block content %}
-<meta name="description" content="Thathwamasi Infotech Pvt Ltd - a trusted IT solutions company offering HRMS software, website designing, SEO, and digital advertising services. Empower your business with smart technology, creative design, and result-driven marketing strategies." />
-<meta name="keywords" content="Thathwamasi Infotech, HRMS software, website designing, web development, SEO services, digital marketing, online advertising, Google Ads, social media marketing, HR management system, payroll management, business automation, IT services company, web design agency, brand promotion, digital solutions, PPC campaigns, business growth solutions" />
+<meta name="description" content="Thathwamasi Infotech Pvt Ltd - HRMS software, website designing, SEO, digital marketing." />
+<meta name="keywords" content="HRMS software, web development, SEO, digital marketing, attendance, payroll, business automation" />
 <meta name="author" content="Thathwamasi Infotech Pvt Ltd" />
 <meta name="robots" content="index, follow" />
 
@@ -56,9 +56,28 @@
       </div>
     </div>
   </div>
-  <!-- /Widget Info -->
 </div>
 
+<!-- Filters -->
+<div class="row mb-3">
+  <div class="col-md-6">
+    <label for="empFilter" class="form-label">Filter by Employee:</label>
+    <form method="get" id="filterForm">
+      <select name="employee" id="empFilter" class="form-select" onchange="document.getElementById('filterForm').submit()">
+        <option value="">All Employees</option>
+        {% for name in employee_list %}
+          <option value="{{ name }}" {% if selected_employee == name %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+  </div>
+  <div class="col-md-6">
+    <label for="dateFilter" class="form-label">Filter by Date:</label>
+    <input type="date" name="date" id="dateFilter" class="form-control" value="{{ selected_date }}" onchange="document.getElementById('filterForm').submit()">
+    </form>
+  </div>
+</div>
+
+<!-- Attendance Table -->
 <div class="row">
   <div class="col-sm-12">
     <div class="card">
@@ -66,22 +85,6 @@
         <h4 class="card-title">Attendance</h4>
       </div>
       <div class="card-body">
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="empFilter" class="form-label">Filter by Employee:</label>
-            <select id="empFilter" class="form-select">
-  <option value="">All Employees</option>
-  {% for record in attendance_records %}
-    <option value="{{ record.employee.employee_name }}">{{ record.employee.employee_name }}</option>
-  {% endfor %}
-</select>
-
-          </div>
-          <div class="col-md-6">
-            <label for="dateFilter" class="form-label">Filter by Date:</label>
-            <input type="date" id="dateFilter" class="form-control" />
-          </div>
-        </div>
         <div class="table-responsive">
           <table class="table attendance">
             <thead>
@@ -146,76 +149,18 @@
   </div>
 </div>
 
-<!-- JS Section -->
+<!-- Keep only Bootstrap Popovers JS if needed -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
-const empFilter = document.getElementById('empFilter');
-const dateFilter = document.getElementById('dateFilter');
-const table = document.querySelector('.table.attendance tbody');
-const rows = table.querySelectorAll('tr');
-
-function cleanText(str) { return str.replace(/\u00A0/g, '').trim(); }
-
-function formatDateForComparison(dateStr) {
-  const parts = dateStr.split('/');
-  if(parts.length === 3) {
-    return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-  }
-  return '';
-}
-
-function filterTable() {
-  const empVal = empFilter.value.toLowerCase(); // selected value from dropdown
-  const dateVal = dateFilter.value; // yyyy-mm-dd
-
-  rows.forEach(row => {
-    const empName = cleanText(row.children[1].textContent).toLowerCase();
-    const rowDate = formatDateForComparison(cleanText(row.children[0].textContent));
-
-    const empMatch = !empVal || empName === empVal; // exact match from dropdown
-    const dateMatch = !dateVal || rowDate === dateVal;
-
-    row.style.display = (empMatch && dateMatch) ? '' : 'none';
-  });
-}
-
-empFilter.addEventListener('change', filterTable);
-dateFilter.addEventListener('change', filterTable);
-
-
-  // ---------- Bootstrap Popovers ----------
   const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
   const popoverList = popoverTriggerList.map(el => new bootstrap.Popover(el, {html:true, trigger:'focus', container:'body'}));
 
   document.addEventListener('click', function(e) {
     popoverList.forEach(pop => { if(!pop._element.contains(e.target)) pop.hide(); });
   });
-
-  // ---------- Optional: Inactivity Auto-Logout (5 minutes) ----------
-  const logoutAfter = 5*60*1000;
-  let lastActivity = Date.now(), logoutTimer;
-
-  function resetLogoutTimer() {
-    lastActivity = Date.now();
-    clearTimeout(logoutTimer);
-    logoutTimer = setTimeout(autoLogout, logoutAfter);
-  }
-
-  function autoLogout() {
-    if(Date.now() - lastActivity >= logoutAfter) {
-      window.location.href = "{% url 'logout' %}";
-    } else {
-      resetLogoutTimer();
-    }
-  }
-
-  ['click','mousemove','keydown','scroll','touchstart'].forEach(evt => {
-    document.addEventListener(evt, resetLogoutTimer);
-  });
-
-  resetLogoutTimer();
-
 });
 </script>
+
+
+
 {% endblock %}
