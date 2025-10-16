@@ -190,37 +190,43 @@
       </div>
     </div>
   </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const empFilter = document.getElementById('empFilter');
+  const dateFilter = document.getElementById('dateFilter');
+  const table = document.querySelector('.table.attendance tbody');
+  const rows = table.querySelectorAll('tr');
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const empFilter = document.getElementById('empFilter')
-      const dateFilter = document.getElementById('dateFilter')
-      const table = document.querySelector('.table.attendance tbody')
-      const rows = table.querySelectorAll('tr')
-    
-      function filterTable() {
-        const empVal = empFilter.value.toLowerCase()
-        const dateVal = dateFilter.value
-    
-        rows.forEach((row) => {
-          const empName = row.children[1].textContent.toLowerCase()
-          const date = row.children[0].textContent.split('/').reverse().join('-')
-    
-          let empMatch = empVal === '' || empName === empVal
-          let dateMatch = dateVal === '' || date === dateVal
-    
-          if (empMatch && dateMatch) {
-            row.style.display = ''
-          } else {
-            row.style.display = 'none'
-          }
-        })
+  function cleanText(str) {
+    return str.replace(/\u00A0/g, '').trim(); 
+  }
+
+  function filterTable() {
+    const empVal = empFilter.value.toLowerCase();
+    const dateVal = dateFilter.value; 
+
+    rows.forEach(row => {
+      const empName = cleanText(row.children[1].textContent).toLowerCase();
+      const dateText = cleanText(row.children[0].textContent);
+
+      const parts = dateText.split('/');
+      let convertedDate = '';
+      if (parts.length === 3) {
+        convertedDate = [parts[2], parts[1], parts[0]].join('-');
       }
-    
-      empFilter.addEventListener('change', filterTable)
-      dateFilter.addEventListener('change', filterTable)
-    })
-  </script>
+
+      const empMatch = !empVal || empName === empVal;
+      const dateMatch = !dateVal || convertedDate === dateVal;
+
+      row.style.display = (empMatch && dateMatch) ? '' : 'none';
+    });
+  }
+
+  empFilter.addEventListener('change', filterTable);
+  dateFilter.addEventListener('change', filterTable);
+});
+</script>
+
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -229,7 +235,7 @@
       var popoverList = popoverTriggerList.map(function (el) {
         return new bootstrap.Popover(el, {
           html: true,
-          trigger: 'focus', // Focus trigger allows clicking outside to close
+          trigger: 'focus', 
           container: 'body'
         })
       })

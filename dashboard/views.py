@@ -59,7 +59,12 @@ def logout_view(request):
 
 @login_required(login_url='/dashboard/login')
 def home(request):
-    attendance_records = Attendance.objects.select_related('employee').all()
+    attendance_records = (
+        Attendance.objects
+        .select_related('employee')
+        .order_by('-date', '-check_in', '-check_out') 
+    )
+
     total_employees = Employee.objects.filter(employee_status=True).count()
     today = timezone.localdate()
     present_today = Attendance.objects.filter(date=today).count()
