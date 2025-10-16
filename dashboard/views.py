@@ -55,8 +55,15 @@ def logout_view(request):
     return redirect('login')
 
 
-#Dashboard Home
+@login_required
+def keep_alive(request):
+    """Keeps the session alive by marking it as modified."""
+    request.session.modified = True
+    return JsonResponse({'status': 'alive'})
 
+
+
+#Dashboard Home
 @login_required(login_url='/dashboard/login')
 def home(request):
     attendance_records = (

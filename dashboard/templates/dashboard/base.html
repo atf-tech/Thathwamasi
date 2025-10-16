@@ -528,32 +528,49 @@
 
 
 <script>
-  (function () {
-    let inactivityTime = 0;
-    const logoutAfter = 5 * 60 * 1000; // 5 minutes in ms
-    let logoutTimer;
+(function () {
+  const logoutAfter = 5 * 60 * 1000; // 5 minutes in milliseconds
+  const checkInterval = 60 * 1000;   // check every 1 minute
+  let logoutTimer;
+  let lastActivity = Date.now();
 
-    function resetTimer() {
-      clearTimeout(logoutTimer);
-      logoutTimer = setTimeout(autoLogout, logoutAfter);
-    }
+  // Update lastActivity timestamp whenever the user interacts
+  const activityEvents = ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+  activityEvents.forEach(evt => {
+    document.addEventListener(evt, () => {
+      lastActivity = Date.now();
+      resetLogoutTimer();
+    }, false);
+  });
 
-    function autoLogout() {
-      // Optional confirmation before logout
-      // if (!confirm("You have been inactive for 5 minutes. Do you want to stay logged in?")) {
+  function resetLogoutTimer() {
+    clearTimeout(logoutTimer);
+    logoutTimer = setTimeout(autoLogout, logoutAfter);
+  }
+
+  function autoLogout() {
+    const inactiveFor = Date.now() - lastActivity;
+    if (inactiveFor >= logoutAfter) {
+      console.log("User inactive for 5 minutes → logging out");
       window.location.href = "{% url 'logout' %}";
-      // }
+    } else {
+      resetLogoutTimer();
     }
+  }
 
-    // Reset timer on user activity
-    ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
-      document.addEventListener(evt, resetTimer, false);
-    });
+  setInterval(() => {
+    // Only ping if user was active recently
+    if (Date.now() - lastActivity < logoutAfter) {
+      fetch("{% url 'keep_alive' %}", {credentials: 'same-origin'});
+      // console.log("Session refreshed");
+    }
+  }, checkInterval);
 
-    // Start initial timer
-    resetTimer();
-  })();
+  // Start initial timer
+  resetLogoutTimer();
+})();
 </script>
+
 
 </body>
 </html>
