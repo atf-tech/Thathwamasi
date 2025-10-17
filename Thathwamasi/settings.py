@@ -145,5 +145,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-SESSION_COOKIE_AGE = 300   # 5 minutes (in seconds)
-SESSION_SAVE_EVERY_REQUEST = True  # reset timer on each request
+SESSION_COOKIE_AGE = 300   
+SESSION_SAVE_EVERY_REQUEST = True  

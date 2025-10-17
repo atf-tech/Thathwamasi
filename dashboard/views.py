@@ -226,7 +226,6 @@ def attendance(request):
             name=f"{employee.employee_id}_{timezone.now().strftime('%H%M%S')}.{ext}"
         )
 
-        # ---- Check-in / Check-out logic ----
         if not attendance: 
             if now_time <= shift_start:
                 remarks = "On Time"

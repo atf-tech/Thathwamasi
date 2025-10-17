@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 SHIFT_CHOICES = [
+    ('09:00 to 18:00', '09:00 to 18:00'),
     ('09:30 to 17:30', '09:30 to 17:30'),
     ('10:00 to 18:00', '10:00 to 18:00'),
 ]
@@ -15,6 +16,7 @@ DEPARTMENT_CHOICES = [
     ('HR', 'HR'),
     ('Field Team', 'Field Team'),
     ('Video Grapher', 'Video Grapher'),
+    ('Media', 'Media'),
 ]
 
 class Employee(models.Model):
