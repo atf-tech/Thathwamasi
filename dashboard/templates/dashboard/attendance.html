@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
     <title>Employee Attendance || Thathwamasi</title>
 
-
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'dashboard/img/favicon.png' %}">
 
@@ -66,7 +65,7 @@
             {% if message %}
               <div class="alert alert-{{ message_class|default:'info' }} text-center">{{ message }}</div>
             {% endif %}
- 
+
             <!-- STEP 1: Verify Phone -->
             {% if not show_step2 %}
               <p class="text-center">
@@ -93,11 +92,10 @@
                     ⏰ <strong>Current Time:</strong> {{ current_time }}
                   </div>
                   {% if not attendance.check_out %}
-                  <div class="mt-1">
-                    📝 <strong>Remarks:</strong> {{ attendance.remarks|default:"-" }}
-                  </div>
-                {% endif %}
-
+                    <div class="mt-1">
+                      📝 <strong>Remarks:</strong> {{ attendance.remarks|default:"-" }}
+                    </div>
+                  {% endif %}
 
                   <div class="d-grid mt-3">
                     <a href="{% url 'employee_checkin' %}" class="btn btn-outline-primary btn-lg">➡️ New Attendance</a>
@@ -137,12 +135,11 @@
                 {% if not attendance %}
                   <!-- Not Checked In -->
                   <div class="alert text-center rounded-3 shadow-sm py-3 border-0" 
-                  style="background-color: #fff8e1; color: rgba(167, 6, 6, 1);">
-                <i class="ti ti-alert-triangle fs-4 me-2" style="color: rgba(241, 0, 8, 0.8);"></i>
-                <strong>You have not checked in today.</strong><br>
-                <span class="text-muted">Please check in now to mark your attendance.</span>
-              </div>
-
+                    style="background-color: #fff8e1; color: rgba(167, 6, 6, 1);">
+                    <i class="ti ti-alert-triangle fs-4 me-2" style="color: rgba(241, 0, 8, 0.8);"></i>
+                    <strong>You have not checked in today.</strong><br>
+                    <span class="text-muted">Please check in now to mark your attendance.</span>
+                  </div>
 
                 {% elif attendance and not attendance.check_out %}
                   <!-- Checked In, Awaiting Check-Out -->
@@ -160,17 +157,16 @@
                     <span class="text-muted">Thank you! Your attendance has been successfully recorded.</span>
                   </div>
                 {% endif %}
-
               {% endif %}
             {% endif %}
 
-            <div class="checkin-success bg-success text-white text-center p-3 rounded" id="checkInSuccess">Attendance Successful!</div>
+            <div class="checkin-success bg-success text-white text-center p-3 rounded" id="checkInSuccess">
+              Attendance Successful!
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-       <!-- /Main Wrapper -->
 
     <!-- jQuery -->
     <script src="{% static 'dashboard/js/jquery-3.7.1.min.js' %}"></script>
@@ -184,121 +180,96 @@
     <!-- Custom JS -->
     <script src="{% static 'dashboard/js/script.js' %}"></script>
 
-
-    
-    
-  <script>
-document.addEventListener('DOMContentLoaded', function () {
+    <script>
+  document.addEventListener('DOMContentLoaded', function () {
+  // ------------------------
+  // 1️⃣ Location Handling
+  // ------------------------
   const addressInput = document.getElementById('address');
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      async function (position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-
-        try {
-          // Fetch readable address using OpenStreetMap, force English
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&accept-language=en`
+  if (addressInput) {
+    const cachedLocation = localStorage.getItem('user_address');
+    if (cachedLocation) {
+      addressInput.value = cachedLocation;
+    } else if (navigator.geolocation) {
+      navigator.permissions?.query({ name: 'geolocation' }).then(result => {
+        if (result.state !== 'denied') {
+          navigator.geolocation.getCurrentPosition(
+            async pos => {
+              const lat = pos.coords.latitude;
+              const lon = pos.coords.longitude;
+              try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en`);
+                const data = await res.json();
+                const locationText = data?.display_name || `${lat}, ${lon}`;
+                addressInput.value = locationText;
+                localStorage.setItem('user_address', locationText);
+              } catch {
+                addressInput.value = `${lat}, ${lon}`;
+                localStorage.setItem('user_address', `${lat}, ${lon}`);
+              }
+            },
+            () => {}, // silently ignore errors
+            { enableHighAccuracy: false, timeout: 5000 }
           );
-          const data = await res.json();
-
-          if (data && data.display_name) {
-            addressInput.value = data.display_name; 
-          } else {
-            addressInput.value = `${lat}, ${lon}`;
-          }
-        } catch (err) {
-          console.warn('Reverse geocode failed:', err);
-          addressInput.value = `${lat}, ${lon}`;
         }
-      },
-      function (error) {
-        console.warn('Location permission denied or unavailable:', error);
-      },
-      { enableHighAccuracy: true }
-    );
-  } else {
-    console.warn('Geolocation not supported by this browser.');
+      });
+    }
+  }
+
+  // ------------------------
+  // 2️⃣ Camera Handling
+  // ------------------------
+  const video = document.getElementById('att-camera');
+  const captureBtn = document.getElementById('capture-btn');
+  const canvas = document.createElement('canvas');
+  const imageDataInput = document.getElementById('image_data');
+  const captureForm = document.getElementById('capture-form');
+
+  if (video) {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+      .then(stream => { video.srcObject = stream; video.play(); })
+      .catch(() => {}); // silently ignore camera errors
+  }
+
+  if (captureBtn) {
+    captureBtn.addEventListener('click', function () {
+      if (!video || !video.videoWidth || !video.videoHeight) return;
+      if (!addressInput.value || !addressInput.value.trim()) {
+  alert('Location not detected. Please enable location and reload the page.');
+  return;
+}
+
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      imageDataInput.value = canvas.toDataURL('image/png');
+
+      captureBtn.disabled = true;
+      captureBtn.innerText = 'Submitting...';
+      captureForm.submit();
+    });
+  }
+
+  // ------------------------
+  // 3️⃣ Auto Redirect After Success
+  // ------------------------
+  const successAlert = document.querySelector('.alert-success');
+  const previewImage = document.querySelector('img[src*="media/"]');
+  if (successAlert && previewImage) {
+    const msg = document.createElement('div');
+    msg.classList.add('text-muted', 'mt-2');
+    msg.textContent = "Redirecting to new attendance page in 3 seconds...";
+    successAlert.appendChild(msg);
+
+    setTimeout(() => { window.location.href = "{% url 'employee_checkin' %}"; }, 3000);
   }
 });
 </script>
-
-
-
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const video = document.getElementById('att-camera');
-    const captureBtn = document.getElementById('capture-btn');
-    const canvas = document.createElement('canvas');
-    const imageDataInput = document.getElementById('image_data');
-    const captureForm = document.getElementById('capture-form');
-    const addressInput = document.getElementById('address');
-
-    if (video) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
-            .then(stream => {
-                video.srcObject = stream;
-                video.play();
-            })
-            .catch(err => console.warn('Camera access denied:', err));
-    }
-
-    const checkLocationReady = () => {
-        if (!addressInput.value || addressInput.value.trim() === "") {
-            alert("Location is required! Please allow location access.");
-            return false;
-        }
-        return true;
-    };
-
-    if (captureBtn) {
-        captureBtn.addEventListener('click', function () {
-            if (!video.videoWidth || !video.videoHeight) return alert('Camera not ready');
-            if (!checkLocationReady()) return;
-
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            const ctx = canvas.getContext('2d');
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const dataUrl = canvas.toDataURL('image/png');
-            imageDataInput.value = dataUrl;
-
-            captureBtn.disabled = true;
-            captureBtn.innerText = 'Submitting...';
-            captureForm.submit();
-        });
-    }
-});
-</script>
-
-
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const successAlert = document.querySelector('.alert-success');
-    const previewImage = document.querySelector('img[src*="media/"]');
-
-    if (successAlert && previewImage) {
-      // Add info text
-      const msg = document.createElement('div');
-      msg.classList.add('text-muted', 'mt-2');
-      msg.textContent = "Redirecting to new attendance page in 3 seconds...";
-      successAlert.appendChild(msg);
-
-      // Redirect after 3 seconds
-      setTimeout(function () {
-        window.location.href = "{% url 'employee_checkin' %}";
-      }, 3000);
-    }
-  });
-</script>
-
 
   </body>
 </html>
