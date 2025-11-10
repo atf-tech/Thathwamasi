@@ -166,8 +166,6 @@ def employee(request):
 
 
 
-
-
 @csrf_exempt
 def attendance(request):
     ctx = {"show_step2": False}
@@ -213,6 +211,18 @@ def attendance(request):
             pre_remarks = attendance.remarks
 
         ctx["pre_remarks"] = pre_remarks
+
+        if not attendance:
+            # now is timezone.localtime() and timezone-aware
+            allowed_dt = now + timedelta(hours=8)
+            if allowed_dt.date() == today:
+                ctx["allowed_checkout_time"] = allowed_dt.strftime("%I:%M %p")
+            else:
+                ctx["allowed_checkout_time"] = allowed_dt.strftime("%d/%m/%Y %I:%M %p")
+        else:
+            # keep existing behavior; other parts of the view will override this if needed
+            ctx["allowed_checkout_time"] = None
+        # -------------------------------
 
         image_data = request.POST.get("image_data", "")
         if step == "verify":

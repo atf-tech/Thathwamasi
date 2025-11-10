@@ -7,26 +7,26 @@
     <title>Employee Attendance || Thathwamasi</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'dashboard/img/favicon.png' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'dashboard/img/favicon.png' %}" />
 
     <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'dashboard/img/apple-touch-icon.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'dashboard/img/apple-touch-icon.png' %}" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{% static 'dashboard/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/bootstrap.min.css' %}" />
 
     <!-- Feather CSS -->
-    <link rel="stylesheet" href="{% static 'dashboard/plugins/icons/feather/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/plugins/icons/feather/feather.css' %}" />
 
     <!-- Tabler Icon CSS -->
-    <link rel="stylesheet" href="{% static 'dashboard/plugins/tabler-icons/tabler-icons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/plugins/tabler-icons/tabler-icons.min.css' %}" />
 
     <!-- Fontawesome CSS -->
-    <link rel="stylesheet" href="{% static 'dashboard/plugins/fontawesome/css/fontawesome.min.css' %}">
-    <link rel="stylesheet" href="{% static 'dashboard/plugins/fontawesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/plugins/fontawesome/css/fontawesome.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'dashboard/plugins/fontawesome/css/all.min.css' %}" />
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}" />
 
     <style>
       body {
@@ -91,9 +91,16 @@
                   <div class="mt-2">
                     ⏰ <strong>Current Time:</strong> {{ current_time }}
                   </div>
+                 {% if attendance and not attendance.check_out %}
+                    <p class="text-muted mt-2">
+                      ⏰ You can checkout after 8 hours at <strong>{{ allowed_checkout_time }}</strong>.
+                    </p>
+                  {% endif %}
+
+
                   {% if not attendance.check_out %}
                     <div class="mt-1">
-                      📝 <strong>Remarks:</strong> {{ attendance.remarks|default:"-" }}
+                      📝 <strong>Remarks:</strong> {{ attendance.remarks|default:'-' }}
                     </div>
                   {% endif %}
 
@@ -113,6 +120,14 @@
                   <div class="mt-2">
                     ⏰ <strong>Current Time:</strong> {{ current_time }}
                   </div>
+
+                  {% if not attendance %}
+                    <p class="text-muted mt-2">
+                      ⏰ Based on current time ({{ current_time }}), you can checkout after 8 hours at
+                      <strong>{{ allowed_checkout_time }}</strong>.
+                    </p>
+                  {% endif %}
+
                   <div class="mt-1">
                     📝 <strong>Remarks:</strong> {{ pre_remarks|default:'-' }}
                   </div>
@@ -134,38 +149,31 @@
 
                 {% if not attendance %}
                   <!-- Not Checked In -->
-                  <div class="alert text-center rounded-3 shadow-sm py-3 border-0" 
-                    style="background-color: #fff8e1; color: rgba(167, 6, 6, 1);">
+                  <div class="alert text-center rounded-3 shadow-sm py-3 border-0" style="background-color: #fff8e1; color: rgba(167, 6, 6, 1);">
                     <i class="ti ti-alert-triangle fs-4 me-2" style="color: rgba(241, 0, 8, 0.8);"></i>
-                    <strong>You have not checked in today.</strong><br>
-                     {% if allowed_checkout_time %}
-                        <span class="text-muted d-block mt-1">You can checkout after 8 hours at <strong>{{ allowed_checkout_time }}</strong></span>
-                      {% endif %}
+                    <strong>You have not checked in today.</strong><br />
+
                     <span class="text-muted">Please check in now to mark your attendance.</span>
                   </div>
-
                 {% elif attendance and not attendance.check_out %}
                   <!-- Checked In, Awaiting Check-Out -->
                   <div class="alert alert-success text-center rounded-3 shadow-sm py-3">
                     <i class="ti ti-clock-check fs-4 text-success me-2"></i>
-                    <strong>Checked in at {{ attendance.check_in|date:"h:i:s A" }}</strong><br>
-                     {% if allowed_checkout_time %}
-                        <span class="text-muted d-block mt-1">You can checkout after 8 hours at <strong>{{ allowed_checkout_time }}</strong></span>
-                      {% endif %}
+                    <strong>Checked in at {{ attendance.check_in|date:'h:i:s A' }}</strong><br />
+                    {% if allowed_checkout_time %}
+                      <span class="text-muted d-block mt-1">You can checkout after 8 hours at <strong>{{ allowed_checkout_time }}</strong></span>
+                    {% endif %}
 
                     <span class="text-muted">Now please check out when your workday ends.</span>
                   </div>
-
                 {% elif attendance and attendance.check_out %}
                   <!-- Already Checked Out -->
                   <div class="alert alert-info text-center rounded-3 shadow-sm py-3">
                     <i class="ti ti-calendar-check fs-4 text-info me-2"></i>
-                    <strong>Already checked out at {{ attendance.check_out|date:"h:i:s A" }}</strong><br>
+                    <strong>Already checked out at {{ attendance.check_out|date:'h:i:s A' }}</strong><br />
 
                     {% if total_working_time %}
-                      <span class="text-success fw-bold d-block mt-1">
-                        🕒 Total Working Hours: {{ total_working_time }}
-                      </span>
+                      <span class="text-success fw-bold d-block mt-1">🕒 Total Working Hours: {{ total_working_time }}</span>
                     {% endif %}
                     <span class="text-muted">Thank you! Your attendance has been successfully recorded.</span>
                   </div>
@@ -173,9 +181,7 @@
               {% endif %}
             {% endif %}
 
-            <div class="checkin-success bg-success text-white text-center p-3 rounded" id="checkInSuccess">
-              Attendance Successful!
-            </div>
+            <div class="checkin-success bg-success text-white text-center p-3 rounded" id="checkInSuccess">Attendance Successful!</div>
           </div>
         </div>
       </div>
@@ -194,95 +200,99 @@
     <script src="{% static 'dashboard/js/script.js' %}"></script>
 
     <script>
-  document.addEventListener('DOMContentLoaded', function () {
-  // ------------------------
-  // 1️⃣ Location Handling
-  // ------------------------
-  const addressInput = document.getElementById('address');
-  if (addressInput) {
-    const cachedLocation = localStorage.getItem('user_address');
-    if (cachedLocation) {
-      addressInput.value = cachedLocation;
-    } else if (navigator.geolocation) {
-      navigator.permissions?.query({ name: 'geolocation' }).then(result => {
-        if (result.state !== 'denied') {
-          navigator.geolocation.getCurrentPosition(
-            async pos => {
-              const lat = pos.coords.latitude;
-              const lon = pos.coords.longitude;
-              try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en`);
-                const data = await res.json();
-                const locationText = data?.display_name || `${lat}, ${lon}`;
-                addressInput.value = locationText;
-                localStorage.setItem('user_address', locationText);
-              } catch {
-                addressInput.value = `${lat}, ${lon}`;
-                localStorage.setItem('user_address', `${lat}, ${lon}`);
+      document.addEventListener('DOMContentLoaded', function () {
+        // ------------------------
+        // 1️⃣ Location Handling
+        // ------------------------
+        const addressInput = document.getElementById('address')
+        if (addressInput) {
+          const cachedLocation = localStorage.getItem('user_address')
+          if (cachedLocation) {
+            addressInput.value = cachedLocation
+          } else if (navigator.geolocation) {
+            navigator.permissions?.query({ name: 'geolocation' }).then((result) => {
+              if (result.state !== 'denied') {
+                navigator.geolocation.getCurrentPosition(
+                  async (pos) => {
+                    const lat = pos.coords.latitude
+                    const lon = pos.coords.longitude
+                    try {
+                      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en`)
+                      const data = await res.json()
+                      const locationText = data?.display_name || `${lat}, ${lon}`
+                      addressInput.value = locationText
+                      localStorage.setItem('user_address', locationText)
+                    } catch {
+                      addressInput.value = `${lat}, ${lon}`
+                      localStorage.setItem('user_address', `${lat}, ${lon}`)
+                    }
+                  },
+                  () => {}, // silently ignore errors
+                  { enableHighAccuracy: false, timeout: 5000 }
+                )
               }
-            },
-            () => {}, // silently ignore errors
-            { enableHighAccuracy: false, timeout: 5000 }
-          );
+            })
+          }
         }
-      });
-    }
-  }
-
-  // ------------------------
-  // 2️⃣ Camera Handling
-  // ------------------------
-  const video = document.getElementById('att-camera');
-  const captureBtn = document.getElementById('capture-btn');
-  const canvas = document.createElement('canvas');
-  const imageDataInput = document.getElementById('image_data');
-  const captureForm = document.getElementById('capture-form');
-
-  if (video) {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
-      .then(stream => { video.srcObject = stream; video.play(); })
-      .catch(() => {}); // silently ignore camera errors
-  }
-
-  if (captureBtn) {
-    captureBtn.addEventListener('click', function () {
-      if (!video || !video.videoWidth || !video.videoHeight) return;
-      if (!addressInput.value || !addressInput.value.trim()) {
-  alert('Location not detected. Please enable location and reload the page.');
-  return;
-}
-
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.translate(canvas.width, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      imageDataInput.value = canvas.toDataURL('image/png');
-
-      captureBtn.disabled = true;
-      captureBtn.innerText = 'Submitting...';
-      captureForm.submit();
-    });
-  }
-
-  // ------------------------
-  // 3️⃣ Auto Redirect After Success
-  // ------------------------
-  const successAlert = document.querySelector('.alert-success');
-  const previewImage = document.querySelector('img[src*="media/"]');
-  if (successAlert && previewImage) {
-    const msg = document.createElement('div');
-    msg.classList.add('text-muted', 'mt-2');
-    msg.textContent = "Redirecting to new attendance page in 3 seconds...";
-    successAlert.appendChild(msg);
-
-    setTimeout(() => { window.location.href = "{% url 'employee_checkin' %}"; }, 3000);
-  }
-});
-</script>
-
+      
+        // ------------------------
+        // 2️⃣ Camera Handling
+        // ------------------------
+        const video = document.getElementById('att-camera')
+        const captureBtn = document.getElementById('capture-btn')
+        const canvas = document.createElement('canvas')
+        const imageDataInput = document.getElementById('image_data')
+        const captureForm = document.getElementById('capture-form')
+      
+        if (video) {
+          navigator.mediaDevices
+            .getUserMedia({ video: { facingMode: 'user' } })
+            .then((stream) => {
+              video.srcObject = stream
+              video.play()
+            })
+            .catch(() => {}) // silently ignore camera errors
+        }
+      
+        if (captureBtn) {
+          captureBtn.addEventListener('click', function () {
+            if (!video || !video.videoWidth || !video.videoHeight) return
+            if (!addressInput.value || !addressInput.value.trim()) {
+              alert('Location not detected. Please enable location and reload the page.')
+              return
+            }
+      
+            canvas.width = video.videoWidth
+            canvas.height = video.videoHeight
+            const ctx = canvas.getContext('2d')
+            ctx.translate(canvas.width, 0)
+            ctx.scale(-1, 1)
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+      
+            imageDataInput.value = canvas.toDataURL('image/png')
+      
+            captureBtn.disabled = true
+            captureBtn.innerText = 'Submitting...'
+            captureForm.submit()
+          })
+        }
+      
+        // ------------------------
+        // 3️⃣ Auto Redirect After Success
+        // ------------------------
+        const successAlert = document.querySelector('.alert-success')
+        const previewImage = document.querySelector('img[src*="media/"]')
+        if (successAlert && previewImage) {
+          const msg = document.createElement('div')
+          msg.classList.add('text-muted', 'mt-2')
+          msg.textContent = 'Redirecting to new attendance page in 3 seconds...'
+          successAlert.appendChild(msg)
+      
+          setTimeout(() => {
+            window.location.href = "{% url 'employee_checkin' %}"
+          }, 3000)
+        }
+      })
+    </script>
   </body>
 </html>
