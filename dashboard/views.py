@@ -5,8 +5,6 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from django.db import IntegrityError
-from django.shortcuts import render
-from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from datetime import date
@@ -17,9 +15,6 @@ from django.utils import timezone
 from django.core.files.base import ContentFile
 from django.conf import settings
 from datetime import datetime, timedelta
-from django.utils import timezone
-from django.shortcuts import render
-from django.core.files.base import ContentFile
 
 
 
@@ -66,11 +61,19 @@ def keep_alive(request):
 
 
 
+def _format_timedelta_for_table(td):
+    if not td:
+        return None
+    total_minutes = int(td.total_seconds() // 60)  
+    hours, minutes = divmod(total_minutes, 60)
+    h_label = "hour" if hours in (0, 1) else "hours"
+    m_label = "minute" if minutes == 1 else "minutes"
+    return f"{hours} {h_label} {minutes} {m_label}"
 
 @login_required(login_url='/dashboard/login')
 def home(request):
     emp_name = request.GET.get('employee', '').strip()
-    date_str = request.GET.get('date', '').strip() 
+    date_str = request.GET.get('date', '').strip()
 
     attendance_records = Attendance.objects.select_related('employee').order_by('-date', '-check_in', '-check_out')
 
@@ -83,6 +86,13 @@ def home(request):
             attendance_records = attendance_records.filter(date=date_obj)
         except ValueError:
             pass
+
+    now = timezone.localtime()
+    for rec in attendance_records:
+        if rec.total_duration:
+            rec.total_duration_display = _format_timedelta_for_table(rec.total_duration)
+        else:
+            rec.total_duration_display = None
 
     total_employees = Employee.objects.filter(employee_status=True).count()
     today = timezone.localdate()
@@ -108,13 +118,11 @@ def home(request):
 
 
 
-
 @login_required(login_url='/dashboard/login')
 def employee(request):
     emp_id = request.POST.get('emp_id')
 
     if request.method == 'POST':
-        # DELETE
         if 'delete' in request.POST:
             delete_id = request.POST.get('delete')
             emp = get_object_or_404(Employee, id=delete_id)
@@ -122,7 +130,6 @@ def employee(request):
             messages.success(request, "Employee deleted successfully.")
             return redirect('employee')
 
-        # CREATE OR UPDATE
         if emp_id:
             emp = get_object_or_404(Employee, id=emp_id)
             messages_text = "Employee updated successfully."
@@ -130,7 +137,6 @@ def employee(request):
             emp = Employee()
             messages_text = "Employee created successfully."
 
-        # Update employee fields
         emp.employee_name = request.POST['employee_name']
         emp.employee_email = request.POST['employee_email']
         emp.employee_phone = request.POST['employee_phone']
@@ -162,7 +168,6 @@ def employee(request):
 
 
 
-
 @csrf_exempt
 def attendance(request):
     ctx = {"show_step2": False}
@@ -179,11 +184,12 @@ def attendance(request):
 
         ctx["employee"] = employee
         today = timezone.localdate()
-        now_time = timezone.localtime().time()
+        now = timezone.localtime()
+        now_time = now.time()
 
         attendance = Attendance.objects.filter(employee=employee, date=today).first()
         ctx["attendance"] = attendance
-        ctx["current_time"] = timezone.localtime().strftime("%I:%M:%S %p")
+        ctx["current_time"] = now.strftime("%I:%M:%S %p")
         ctx["show_step2"] = True
 
         if employee.shift_timings:
@@ -208,25 +214,58 @@ def attendance(request):
 
         ctx["pre_remarks"] = pre_remarks
 
+        image_data = request.POST.get("image_data", "")
         if step == "verify":
+            if attendance and attendance.check_in and not attendance.check_out:
+                check_in_dt = datetime.combine(attendance.date, attendance.check_in)
+                if timezone.is_naive(check_in_dt):
+                    check_in_dt = timezone.make_aware(check_in_dt, timezone.get_current_timezone())
+                if now < check_in_dt:
+                    check_in_dt -= timedelta(days=1)
+                duration = now - check_in_dt
+                total_minutes = int(duration.total_seconds() // 60)
+                hrs, mins = divmod(total_minutes, 60)
+                ctx["total_working_time"] = f"{hrs} hours {mins} minutes"
+                allowed_dt = check_in_dt + timedelta(hours=8)
+                if allowed_dt.date() == attendance.date:
+                    ctx["allowed_checkout_time"] = allowed_dt.strftime("%I:%M %p")
+                else:
+                    ctx["allowed_checkout_time"] = allowed_dt.strftime("%d/%m/%Y %I:%M %p")
             return render(request, "dashboard/attendance.html", ctx)
 
-        # ---- Capture image ----
-        image_data = request.POST.get("image_data", "")
         if not image_data:
             ctx.update(message="Please capture a photo.", message_class="danger")
             return render(request, "dashboard/attendance.html", ctx)
 
         address = request.POST.get("address", "").strip()
 
-        header, imgstr = image_data.split(";base64,")
-        ext = header.split("/")[-1]
-        file_content = ContentFile(
-            base64.b64decode(imgstr),
-            name=f"{employee.employee_id}_{timezone.now().strftime('%H%M%S')}.{ext}"
-        )
+        try:
+            header, imgstr = image_data.split(";base64,")
+            ext = header.split("/")[-1]
+            file_content = ContentFile(
+                base64.b64decode(imgstr),
+                name=f"{employee.employee_id}_{timezone.now().strftime('%H%M%S')}.{ext}"
+            )
+        except Exception:
+            ctx.update(message="Invalid image data.", message_class="danger")
+            return render(request, "dashboard/attendance.html", ctx)
 
-        if not attendance: 
+        def compute_and_store_duration(att, end_dt):
+            if not att.check_in:
+                return None
+            start_dt = datetime.combine(att.date, att.check_in)
+            if timezone.is_naive(start_dt):
+                start_dt = timezone.make_aware(start_dt, timezone.get_current_timezone())
+            if end_dt < start_dt:
+                end_dt += timedelta(days=1)
+            raw_duration = end_dt - start_dt
+            total_minutes = int(raw_duration.total_seconds() // 60)
+            duration = timedelta(minutes=total_minutes)
+            att.total_duration = duration
+            att.save(update_fields=['total_duration'])
+            return duration
+
+        if not attendance:
             if now_time <= shift_start:
                 remarks = "On Time"
             elif now_time <= grace_time:
@@ -241,8 +280,17 @@ def attendance(request):
                 check_in_image=file_content,
                 remarks=remarks,
                 status="Present",
-                check_in_location=address  
+                check_in_location=address
             )
+
+            checkin_dt = datetime.combine(attendance.date, attendance.check_in)
+            if timezone.is_naive(checkin_dt):
+                checkin_dt = timezone.make_aware(checkin_dt, timezone.get_current_timezone())
+            allowed_dt = checkin_dt + timedelta(hours=8)
+            if allowed_dt.date() == attendance.date:
+                ctx["allowed_checkout_time"] = allowed_dt.strftime("%I:%M %p")
+            else:
+                ctx["allowed_checkout_time"] = allowed_dt.strftime("%d/%m/%Y %I:%M %p")
 
             ctx.update(
                 message=f"Checked in at {attendance.check_in.strftime('%I:%M:%S %p')} ({attendance.remarks})",
@@ -253,20 +301,47 @@ def attendance(request):
         elif attendance and not attendance.check_out:
             attendance.check_out = now_time
             attendance.check_out_image = file_content
-            attendance.check_out_location = address 
-            attendance.save()
-
+            attendance.check_out_location = address
+            attendance.save(update_fields=['check_out', 'check_out_image', 'check_out_location'])
+            duration = compute_and_store_duration(attendance, now)
+            duration_str = None
+            if duration:
+                secs = int(duration.total_seconds())
+                hrs = secs // 3600
+                mins = (secs % 3600) // 60
+                duration_str = f"{hrs} hours {mins} minutes"
             ctx.update(
-                message=f"Checked out at {attendance.check_out.strftime('%I:%M:%S %p')}",
+                message=f"Checked out at {attendance.check_out.strftime('%I:%M:%S %p')}"
+                        + (f" — Total: {duration_str}" if duration_str else ""),
                 message_class="success",
                 preview_url=attendance.check_out_image.url
             )
 
-        else:  
+        else:
             ctx.update(
                 message=f"Already checked out at {attendance.check_out.strftime('%I:%M:%S %p')}",
                 message_class="info"
             )
+
+        if attendance and attendance.check_in and not attendance.check_out:
+            checkin_dt = datetime.combine(attendance.date, attendance.check_in)
+            if timezone.is_naive(checkin_dt):
+                checkin_dt = timezone.make_aware(checkin_dt, timezone.get_current_timezone())
+            allowed_dt = checkin_dt + timedelta(hours=8)
+            if allowed_dt.date() == attendance.date:
+                ctx["allowed_checkout_time"] = allowed_dt.strftime("%I:%M %p")
+            else:
+                ctx["allowed_checkout_time"] = allowed_dt.strftime("%d/%m/%Y %I:%M %p")
+            ctx["total_working_time"] = None
+        else:
+            if attendance and attendance.total_duration:
+                secs = int(attendance.total_duration.total_seconds())
+                hrs = secs // 3600
+                mins = (secs % 3600) // 60
+                ctx["total_working_time"] = f"{hrs} hours {mins} minutes"
+            else:
+                ctx["total_working_time"] = None
+            ctx["allowed_checkout_time"] = None
 
         ctx["attendance"] = attendance
         return render(request, "dashboard/attendance.html", ctx)

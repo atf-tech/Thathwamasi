@@ -83,6 +83,7 @@ class Attendance(models.Model):
     check_out_location = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=30, choices=ATTENDANCE_STATUS, default='Present')
     remarks = models.TextField(blank=True, choices=ATTENDANCE_REMARKS, default='On Time')
+    total_duration = models.DurationField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
    
 

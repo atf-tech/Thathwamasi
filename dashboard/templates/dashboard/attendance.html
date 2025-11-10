@@ -138,6 +138,9 @@
                     style="background-color: #fff8e1; color: rgba(167, 6, 6, 1);">
                     <i class="ti ti-alert-triangle fs-4 me-2" style="color: rgba(241, 0, 8, 0.8);"></i>
                     <strong>You have not checked in today.</strong><br>
+                     {% if allowed_checkout_time %}
+                        <span class="text-muted d-block mt-1">You can checkout after 8 hours at <strong>{{ allowed_checkout_time }}</strong></span>
+                      {% endif %}
                     <span class="text-muted">Please check in now to mark your attendance.</span>
                   </div>
 
@@ -146,14 +149,24 @@
                   <div class="alert alert-success text-center rounded-3 shadow-sm py-3">
                     <i class="ti ti-clock-check fs-4 text-success me-2"></i>
                     <strong>Checked in at {{ attendance.check_in|date:"h:i:s A" }}</strong><br>
+                     {% if allowed_checkout_time %}
+                        <span class="text-muted d-block mt-1">You can checkout after 8 hours at <strong>{{ allowed_checkout_time }}</strong></span>
+                      {% endif %}
+
                     <span class="text-muted">Now please check out when your workday ends.</span>
                   </div>
 
-                {% else %}
+                {% elif attendance and attendance.check_out %}
                   <!-- Already Checked Out -->
                   <div class="alert alert-info text-center rounded-3 shadow-sm py-3">
                     <i class="ti ti-calendar-check fs-4 text-info me-2"></i>
                     <strong>Already checked out at {{ attendance.check_out|date:"h:i:s A" }}</strong><br>
+
+                    {% if total_working_time %}
+                      <span class="text-success fw-bold d-block mt-1">
+                        🕒 Total Working Hours: {{ total_working_time }}
+                      </span>
+                    {% endif %}
                     <span class="text-muted">Thank you! Your attendance has been successfully recorded.</span>
                   </div>
                 {% endif %}

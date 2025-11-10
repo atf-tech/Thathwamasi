@@ -97,6 +97,7 @@
                 <th>Check-In Location</th>
                 <th>Status</th>
                 <th>Remarks</th>
+                <th>Total Hours</th>
                 <th>Check-Out</th>
                 <th>Check-Out Photo</th>
                 <th>Check-Out Location</th>
@@ -130,6 +131,14 @@
                     {% else %}{{ record.remarks }}{% endif %}
                   {% else %}-{% endif %}
                 </td>
+                <td>
+                  {% if record.total_duration_display %}
+                    {{ record.total_duration_display }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+
                 <td>{% if record.check_out %}{{ record.check_out|time:'h:i A' }}{% else %}-{% endif %}</td>
                 <td>{% if record.check_out_image %}<img src="{{ record.check_out_image.url }}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;border:1px solid #ccc;">{% else %}-{% endif %}</td>
                 <td style="max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">

@@ -10,7 +10,6 @@ urlpatterns = [
     path('dashboard/logout', views.logout_view, name='logout'),
     path('keep-alive/', views.keep_alive, name='keep_alive'),
     path('employee_checkin', views.attendance, name='employee_checkin'),
-    # path("get_employee/", views.get_employee_by_phone, name="get_employee_by_phone"),
 
     
 ]
